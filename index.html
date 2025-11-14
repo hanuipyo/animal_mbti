@@ -426,7 +426,7 @@
             // Google Apps Script 웹 앱 URL
             // ⚠️ 중요: SETUP_GUIDE.md를 참고하여 Google Apps Script를 배포한 후 여기에 URL을 입력하세요
             // 배포 후 받은 웹 앱 URL을 아래에 입력하세요
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwcjTfSZSSLavnNWkOcOVhq1AgQxQ2gb510GUJLihodvCfhULvaNz4WVQn0Dm4XVsnD/exec';
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRjhxM-W7vhxJGfEMgBpd4ULUPldJ3CIQNMg3TMzwGr0NUZeM3RHXgEg-P32jnP_2z/exec';
             // 예: 'https://script.google.com/macros/s/AKfycby.../exec'
             
             // 보안 토큰 (Google Apps Script의 SECRET_TOKEN과 동일한 값이어야 합니다)
@@ -625,8 +625,16 @@
                 const total = stats.total || (stats.ant + stats.chameleon + stats.owl + stats.penguin + stats.parrot);
                 
                 // 디버깅: 통계 확인
-                console.log('현재 통계:', stats);
-                console.log('원본 유형:', originalType);
+                console.log('=== 균등 배정 로직 시작 ===');
+                console.log('현재 통계:', {
+                    일개미: stats.ant || 0,
+                    카멜레온: stats.chameleon || 0,
+                    부엉이: stats.owl || 0,
+                    황제펭귄: stats.penguin || 0,
+                    앵무새: stats.parrot || 0,
+                    총합: total
+                });
+                console.log('원본 유형:', originalType, `(${animalTypeNames[originalType]})`);
                 
                 // 최대 인원수에 도달했으면 더 이상 추가하지 않음
                 if (total >= MAX_PARTICIPANTS) {
@@ -649,39 +657,45 @@
                 const maxType = typeArray[typeArray.length - 1]; // 가장 많은 유형
                 const minType = typeArray[0]; // 가장 적은 유형
                 
-                console.log('정렬된 유형:', typeArray);
-                console.log('가장 많은 유형:', maxType);
-                console.log('가장 적은 유형:', minType);
-                console.log('차이:', maxType.count - minType.count);
+                console.log('정렬된 유형:', typeArray.map(t => `${animalTypeNames[t.type]}: ${t.count}명`));
+                console.log(`가장 많은 유형: ${animalTypeNames[maxType.type]} (${maxType.count}명)`);
+                console.log(`가장 적은 유형: ${animalTypeNames[minType.type]} (${minType.count}명)`);
+                console.log(`차이: ${maxType.count - minType.count}명`);
                 
                 // 차이가 3명 이상인지 확인
                 if (maxType.count - minType.count >= 3) {
                     // 원래 유형이 가장 많은 유형이면, 가장 적은 유형 중에서 성향이 비슷한 것으로 변경
                     if (originalType === maxType.type) {
-                        console.log('원본 유형이 가장 많은 유형이므로 조정 필요');
+                        console.log(`⚠️ 원본 유형(${animalTypeNames[originalType]})이 가장 많은 유형이므로 조정 필요!`);
                         
                         // 가장 적은 유형들 중에서 성향이 비슷한 유형 찾기
                         const minTypes = typeArray.filter(t => t.count === minType.count);
-                        console.log('가장 적은 유형들:', minTypes);
-                        console.log('원본 유형의 성향이 비슷한 유형들:', similarTypes[originalType]);
+                        console.log('가장 적은 유형들:', minTypes.map(t => animalTypeNames[t.type]));
+                        console.log(`${animalTypeNames[originalType]}와 성향이 비슷한 유형들:`, 
+                            similarTypes[originalType] ? similarTypes[originalType].map(t => animalTypeNames[t]) : '없음');
                         
                         for (let minT of minTypes) {
                             // 원래 유형과 성향이 비슷한 유형인지 확인
                             if (similarTypes[originalType] && similarTypes[originalType].includes(minT.type)) {
-                                console.log('성향이 비슷한 적은 유형 발견:', minT.type);
+                                console.log(`✅ 성향이 비슷한 적은 유형 발견: ${animalTypeNames[minT.type]}`);
+                                console.log(`결과: ${animalTypeNames[originalType]} → ${animalTypeNames[minT.type]}로 조정`);
                                 return minT.type; // 성향이 비슷한 적은 유형으로 변경
                             }
                         }
                         
                         // 성향이 비슷한 유형이 없으면 가장 적은 유형으로 변경
-                        console.log('성향이 비슷한 유형이 없어 가장 적은 유형으로 변경:', minType.type);
+                        console.log(`⚠️ 성향이 비슷한 유형이 없어 가장 적은 유형으로 변경: ${animalTypeNames[minType.type]}`);
+                        console.log(`결과: ${animalTypeNames[originalType]} → ${animalTypeNames[minType.type]}로 조정`);
                         return minType.type;
                     } else {
-                        console.log('원본 유형이 가장 많은 유형이 아니므로 조정하지 않음');
+                        console.log(`원본 유형(${animalTypeNames[originalType]})이 가장 많은 유형이 아니므로 조정하지 않음`);
                     }
                 } else {
                     console.log('차이가 3명 미만이므로 조정하지 않음');
                 }
+                
+                console.log(`최종 결과: ${animalTypeNames[originalType]} (변경 없음)`);
+                console.log('=== 균등 배정 로직 종료 ===');
                 
                 // 차이가 3명 미만이거나 원래 유형이 가장 많은 유형이 아니면 그대로 반환
                 return originalType;

@@ -426,7 +426,7 @@
             // Google Apps Script 웹 앱 URL
             // ⚠️ 중요: SETUP_GUIDE.md를 참고하여 Google Apps Script를 배포한 후 여기에 URL을 입력하세요
             // 배포 후 받은 웹 앱 URL을 아래에 입력하세요
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRjhxM-W7vhxJGfEMgBpd4ULUPldJ3CIQNMg3TMzwGr0NUZeM3RHXgEg-P32jnP_2z/exec';
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz3QpFYwzmDiWUjmyA7OOa5F7kx3SAWdcjHXg-wri9_Q1_AwjEzpU1-QvE-bHXoqoRB/exec';
             // 예: 'https://script.google.com/macros/s/AKfycby.../exec'
             
             // 보안 토큰 (Google Apps Script의 SECRET_TOKEN과 동일한 값이어야 합니다)
@@ -902,8 +902,16 @@
                 const answersDiv = document.getElementById('answers');
                 answersDiv.innerHTML = ''; // 기존 답변을 지웁니다
                 
-                // 각 답변 버튼을 만들어서 추가합니다
-                question.answers.forEach((answer, index) => {
+                // 답변 순서를 랜덤으로 섞기 (배열 복사 후 섞기)
+                const shuffledAnswers = [...question.answers];
+                // Fisher-Yates 셔플 알고리즘 사용
+                for (let i = shuffledAnswers.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffledAnswers[i], shuffledAnswers[j]] = [shuffledAnswers[j], shuffledAnswers[i]];
+                }
+                
+                // 각 답변 버튼을 만들어서 추가합니다 (랜덤 순서로)
+                shuffledAnswers.forEach((answer, index) => {
                     const button = document.createElement('button');
                     button.className = 'answer-btn';
                     button.textContent = answer.text;

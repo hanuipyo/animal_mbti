@@ -426,7 +426,7 @@
             // Google Apps Script 웹 앱 URL
             // ⚠️ 중요: SETUP_GUIDE.md를 참고하여 Google Apps Script를 배포한 후 여기에 URL을 입력하세요
             // 배포 후 받은 웹 앱 URL을 아래에 입력하세요
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwnz50UoAHG9eIMt2Rqie5UUGTkyFVsL0roE5fKE6roMknGNaXiaw_T26HsMCDIq4Q/exec';
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwcjTfSZSSLavnNWkOcOVhq1AgQxQ2gb510GUJLihodvCfhULvaNz4WVQn0Dm4XVsnD/exec';
             // 예: 'https://script.google.com/macros/s/AKfycby.../exec'
             
             // 보안 토큰 (Google Apps Script의 SECRET_TOKEN과 동일한 값이어야 합니다)
@@ -464,9 +464,9 @@
         };
 
             // Google Sheets에서 통계를 불러오는 함수 (비동기)
-            async function loadStatistics() {
-                // 캐시된 데이터가 있고 최근에 로드했다면 캐시 사용
-                if (cachedStats && !statsLoading) {
+            async function loadStatistics(forceRefresh = false) {
+                // 강제 새로고침이 아니고 캐시된 데이터가 있고 최근에 로드했다면 캐시 사용
+                if (!forceRefresh && cachedStats && !statsLoading) {
                     return cachedStats;
                 }
 
@@ -620,11 +620,17 @@
 
             // 균등 배정 로직: 가장 많은 유형과 가장 적은 유형의 차이가 3명 이상이면 조정 (비동기)
             async function adjustForBalance(originalType) {
-                const stats = await loadStatistics();
+                // 통계를 강제로 새로고침하여 최신 데이터 사용
+                const stats = await loadStatistics(true);
                 const total = stats.total || (stats.ant + stats.chameleon + stats.owl + stats.penguin + stats.parrot);
+                
+                // 디버깅: 통계 확인
+                console.log('현재 통계:', stats);
+                console.log('원본 유형:', originalType);
                 
                 // 최대 인원수에 도달했으면 더 이상 추가하지 않음
                 if (total >= MAX_PARTICIPANTS) {
+                    console.log('최대 인원수 도달, 조정하지 않음');
                     return originalType;
                 }
 
@@ -643,23 +649,38 @@
                 const maxType = typeArray[typeArray.length - 1]; // 가장 많은 유형
                 const minType = typeArray[0]; // 가장 적은 유형
                 
+                console.log('정렬된 유형:', typeArray);
+                console.log('가장 많은 유형:', maxType);
+                console.log('가장 적은 유형:', minType);
+                console.log('차이:', maxType.count - minType.count);
+                
                 // 차이가 3명 이상인지 확인
                 if (maxType.count - minType.count >= 3) {
                     // 원래 유형이 가장 많은 유형이면, 가장 적은 유형 중에서 성향이 비슷한 것으로 변경
                     if (originalType === maxType.type) {
+                        console.log('원본 유형이 가장 많은 유형이므로 조정 필요');
+                        
                         // 가장 적은 유형들 중에서 성향이 비슷한 유형 찾기
                         const minTypes = typeArray.filter(t => t.count === minType.count);
+                        console.log('가장 적은 유형들:', minTypes);
+                        console.log('원본 유형의 성향이 비슷한 유형들:', similarTypes[originalType]);
                         
                         for (let minT of minTypes) {
                             // 원래 유형과 성향이 비슷한 유형인지 확인
                             if (similarTypes[originalType] && similarTypes[originalType].includes(minT.type)) {
+                                console.log('성향이 비슷한 적은 유형 발견:', minT.type);
                                 return minT.type; // 성향이 비슷한 적은 유형으로 변경
                             }
                         }
                         
                         // 성향이 비슷한 유형이 없으면 가장 적은 유형으로 변경
+                        console.log('성향이 비슷한 유형이 없어 가장 적은 유형으로 변경:', minType.type);
                         return minType.type;
+                    } else {
+                        console.log('원본 유형이 가장 많은 유형이 아니므로 조정하지 않음');
                     }
+                } else {
+                    console.log('차이가 3명 미만이므로 조정하지 않음');
                 }
                 
                 // 차이가 3명 미만이거나 원래 유형이 가장 많은 유형이 아니면 그대로 반환

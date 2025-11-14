@@ -1,447 +1,456 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>나의 동물 유형 테스트</title>
-    <style>
-        /* 전체 페이지의 기본 스타일을 설정합니다 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            position: relative;
-        }
-
-        /* 메인 컨테이너 스타일 */
-        .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 700px;
-            width: 100%;
-            padding: 40px;
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        /* 페이드인 애니메이션 효과 */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
+    <!DOCTYPE html>
+    <html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>나의 동물 유형 테스트</title>
+        <style>
+            /* 전체 페이지의 기본 스타일을 설정합니다 */
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 20px;
+                position: relative;
             }
-        }
 
-        /* 헤더 스타일 */
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 2em;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 1.1em;
-        }
-
-        /* 시작 화면 스타일 */
-        .start-screen {
-            display: none; /* 기본적으로 숨김 (사용자 정보 입력 후 표시) */
-            text-align: center;
-        }
-
-        .animal-intro {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: left;
-        }
-
-        .animal-intro h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-        }
-
-        .animal-item {
-            padding: 10px 0;
-            font-size: 1.1em;
-            color: #555;
-        }
-
-        .animal-item span {
-            font-size: 1.5em;
-            margin-right: 10px;
-        }
-
-        /* 동물 이미지 스타일 */
-        .animal-item img {
-            width: 40px;
-            height: 40px;
-            object-fit: contain;
-            margin-right: 10px;
-            vertical-align: middle;
-        }
-
-        /* 버튼 스타일 */
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.1em;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 20px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-        }
-
-        /* 퀴즈 화면 스타일 */
-        .quiz-screen {
-            display: none;
-        }
-
-        .progress-bar {
-            background: #e0e0e0;
-            height: 10px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            overflow: hidden;
-        }
-
-        .progress {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            height: 100%;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        .question-number {
-            color: #667eea;
-            font-weight: bold;
-            margin-bottom: 10px;
-            font-size: 0.9em;
-        }
-
-        .question {
-            font-size: 1.3em;
-            color: #333;
-            margin-bottom: 30px;
-            font-weight: 600;
-        }
-
-        /* 답변 선택지 스타일 */
-        .answers {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .answer-btn {
-            background: white;
-            border: 2px solid #e0e0e0;
-            padding: 20px;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: left;
-            font-size: 1em;
-            color: #555;
-        }
-
-        .answer-btn:hover {
-            border-color: #667eea;
-            background: #f8f9ff;
-            transform: translateX(5px);
-        }
-
-        /* 결과 화면 스타일 */
-        .result-screen {
-            display: none;
-            text-align: center;
-        }
-
-        .result-animal {
-            font-size: 5em;
-            margin: 20px 0;
-            animation: bounce 1s ease infinite;
-        }
-
-        /* 결과 화면의 동물 이미지 스타일 */
-        .result-animal img {
-            width: 150px;
-            height: 150px;
-            object-fit: contain;
-            display: block;
-            margin: 0 auto;
-        }
-
-        @keyframes bounce {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-10px);
-            }
-        }
-
-        .result-type {
-            font-size: 2em;
-            color: #667eea;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-
-        .result-description {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 25px;
-            margin: 20px 0;
-            text-align: left;
-        }
-
-        .result-description h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-        }
-
-        .result-description p {
-            color: #555;
-            line-height: 1.8;
-            margin-bottom: 10px;
-        }
-
-        .share-text {
-            background: #fff3cd;
-            border-radius: 10px;
-            padding: 15px;
-            margin: 20px 0;
-            color: #856404;
-            font-size: 0.9em;
-        }
-
-
-        /* 사용자 정보 입력 화면 스타일 */
-        .user-info-screen {
-            display: block; /* 기본적으로 표시 (페이지 로드 시 먼저 보여줌) */
-            text-align: center;
-        }
-
-        .user-info-form {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 30px;
-            margin: 20px 0;
-            text-align: left;
-        }
-
-        .info-note {
-            background: #e8f4f8;
-            border-left: 4px solid #667eea;
-            padding: 12px 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            font-size: 0.9em;
-            color: #555;
-        }
-
-        /* 폼 그룹 스타일 */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-            font-size: 1em;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1em;
-            transition: border-color 0.3s ease;
-            box-sizing: border-box;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        /* 에러 메시지 스타일 */
-        .error-message {
-            color: #dc3545;
-            font-size: 0.85em;
-            margin-top: 5px;
-            display: none;
-        }
-
-        /* 반응형 디자인 */
-        @media (max-width: 600px) {
+            /* 메인 컨테이너 스타일 */
             .container {
-                padding: 25px;
+                background: white;
+                border-radius: 20px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                max-width: 700px;
+                width: 100%;
+                padding: 40px;
+                animation: fadeIn 0.5s ease-in;
             }
 
+            /* 페이드인 애니메이션 효과 */
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            /* 헤더 스타일 */
             h1 {
-                font-size: 1.5em;
+                color: #333;
+                text-align: center;
+                margin-bottom: 10px;
+                font-size: 2em;
             }
 
-            .question {
+            .subtitle {
+                text-align: center;
+                color: #666;
+                margin-bottom: 30px;
                 font-size: 1.1em;
             }
 
-            .result-animal {
-                font-size: 3.5em;
+            /* 시작 화면 스타일 */
+            .start-screen {
+                display: none; /* 기본적으로 숨김 (사용자 정보 입력 후 표시) */
+                text-align: center;
             }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- 사용자 정보 입력 화면 -->
-        <div class="user-info-screen" id="userInfoScreen">
-            <h1>👋 안녕하세요!</h1>
-            <p class="subtitle">테스트를 시작하기 전에 정보를 입력해주세요</p>
+
+            .animal-intro {
+                background: #f8f9fa;
+                border-radius: 15px;
+                padding: 20px;
+                margin: 20px 0;
+                text-align: left;
+            }
+
+            .animal-intro h3 {
+                color: #667eea;
+                margin-bottom: 15px;
+            }
+
+            .animal-item {
+                padding: 10px 0;
+                font-size: 1.1em;
+                color: #555;
+            }
+
+            .animal-item span {
+                font-size: 1.5em;
+                margin-right: 10px;
+            }
+
+            /* 동물 이미지 스타일 */
+            .animal-item img {
+                width: 40px;
+                height: 40px;
+                object-fit: contain;
+                margin-right: 10px;
+                vertical-align: middle;
+            }
+
+            /* 버튼 스타일 */
+            .btn {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                border: none;
+                padding: 15px 40px;
+                font-size: 1.1em;
+                border-radius: 50px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                margin-top: 20px;
+            }
+
+            .btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            }
+
+            /* 퀴즈 화면 스타일 */
+            .quiz-screen {
+                display: none;
+            }
+
+            .progress-bar {
+                background: #e0e0e0;
+                height: 10px;
+                border-radius: 10px;
+                margin-bottom: 30px;
+                overflow: hidden;
+            }
+
+            .progress {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                height: 100%;
+                width: 0%;
+                transition: width 0.3s ease;
+            }
+
+            .question-number {
+                color: #667eea;
+                font-weight: bold;
+                margin-bottom: 10px;
+                font-size: 0.9em;
+            }
+
+            .question {
+                font-size: 1.3em;
+                color: #333;
+                margin-bottom: 30px;
+                font-weight: 600;
+            }
+
+            /* 답변 선택지 스타일 */
+            .answers {
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .answer-btn {
+                background: white;
+                border: 2px solid #e0e0e0;
+                padding: 20px;
+                border-radius: 15px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-align: left;
+                font-size: 1em;
+                color: #555;
+            }
+
+            .answer-btn:hover {
+                border-color: #667eea;
+                background: #f8f9ff;
+                transform: translateX(5px);
+            }
+
+            /* 결과 화면 스타일 */
+            .result-screen {
+                display: none;
+                text-align: center;
+            }
+
+            .result-animal {
+                font-size: 5em;
+                margin: 20px 0;
+                animation: bounce 1s ease infinite;
+            }
+
+            /* 결과 화면의 동물 이미지 스타일 */
+            .result-animal img {
+                width: 150px;
+                height: 150px;
+                object-fit: contain;
+                display: block;
+                margin: 0 auto;
+            }
+
+            @keyframes bounce {
+                0%, 100% {
+                    transform: translateY(0);
+                }
+                50% {
+                    transform: translateY(-10px);
+                }
+            }
+
+            .result-type {
+                font-size: 2em;
+                color: #667eea;
+                font-weight: bold;
+                margin-bottom: 15px;
+            }
+
+            .result-description {
+                background: #f8f9fa;
+                border-radius: 15px;
+                padding: 25px;
+                margin: 20px 0;
+                text-align: left;
+            }
+
+            .result-description h3 {
+                color: #667eea;
+                margin-bottom: 15px;
+            }
+
+            .result-description p {
+                color: #555;
+                line-height: 1.8;
+                margin-bottom: 10px;
+            }
+
+            .share-text {
+                background: #fff3cd;
+                border-radius: 10px;
+                padding: 15px;
+                margin: 20px 0;
+                color: #856404;
+                font-size: 0.9em;
+            }
+
+
+            /* 사용자 정보 입력 화면 스타일 */
+            .user-info-screen {
+                display: block; /* 기본적으로 표시 (페이지 로드 시 먼저 보여줌) */
+                text-align: center;
+            }
+
+            .user-info-form {
+                background: #f8f9fa;
+                border-radius: 15px;
+                padding: 30px;
+                margin: 20px 0;
+                text-align: left;
+            }
+
+            .info-note {
+                background: #e8f4f8;
+                border-left: 4px solid #667eea;
+                padding: 12px 15px;
+                margin-bottom: 20px;
+                border-radius: 5px;
+                font-size: 0.9em;
+                color: #555;
+            }
+
+            /* 폼 그룹 스타일 */
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 600;
+                color: #333;
+                font-size: 1em;
+            }
+
+            .form-group input {
+                width: 100%;
+                padding: 12px 15px;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                font-size: 1em;
+                transition: border-color 0.3s ease;
+                box-sizing: border-box;
+            }
+
+            .form-group input:focus {
+                outline: none;
+                border-color: #667eea;
+            }
+
+            /* 에러 메시지 스타일 */
+            .error-message {
+                color: #dc3545;
+                font-size: 0.85em;
+                margin-top: 5px;
+                display: none;
+            }
+
+            /* 반응형 디자인 */
+            @media (max-width: 600px) {
+                .container {
+                    padding: 25px;
+                }
+
+                h1 {
+                    font-size: 1.5em;
+                }
+
+                .question {
+                    font-size: 1.1em;
+                }
+
+                .result-animal {
+                    font-size: 3.5em;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <!-- 사용자 정보 입력 화면 -->
+            <div class="user-info-screen" id="userInfoScreen">
+                <h1>👋 안녕하세요!</h1>
+                <p class="subtitle">테스트를 시작하기 전에 정보를 입력해주세요</p>
+                
+                <div class="user-info-form">
+                    <div class="info-note">
+                        💡 소속, 이름, 이메일은 통계 분석에만 사용되며, 개인정보는 안전하게 관리됩니다.
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="userSchool">소속 기관</label>
+                        <input type="text" id="userSchool" placeholder="예: 서울초등학교" autocomplete="organization">
+                        <div class="error-message" id="schoolError"></div>
+                        <small style="color: #666; font-size: 0.85em; margin-top: 5px; display: block;">
+                            기관의 공식 명칭을 입력해주세요 (예: OO초등학교, OO중학교 등)
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="userName">이름</label>
+                        <input type="text" id="userName" placeholder="예: 홍길동" autocomplete="name">
+                        <div class="error-message" id="nameError"></div>
+                        <small style="color: #666; font-size: 0.85em; margin-top: 5px; display: block;">
+                            성과 이름을 모두 입력해주세요
+                        </small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="userEmail">이메일</label>
+                        <input type="email" id="userEmail" placeholder="예: hong@example.com" autocomplete="email">
+                        <div class="error-message" id="emailError"></div>
+                        <small style="color: #666; font-size: 0.85em; margin-top: 5px; display: block;">
+                            결과 확인 및 통계 분석에 사용됩니다
+                        </small>
+                    </div>
+                    
+                    <div class="error-message" id="userInfoError" style="text-align: center; margin-top: 10px;"></div>
+                    
+                    <button class="btn" onclick="saveUserInfo()" style="width: 100%; margin-top: 10px;">다음</button>
+                </div>
+            </div>
+
+            <!-- 시작 화면 -->
+            <div class="start-screen" id="startScreen">
+                <h1>🎯 나의 동물 유형 테스트</h1>
+                <p class="subtitle">나는 어떤 동물 유형일까?</p>
+                
+                <div class="animal-intro">
+                    <h3>🌟 5가지 동물 유형</h3>
+                    <div class="animal-item"><img src="https://hanuipyo.github.io/animal_mbti/일개미.png" alt="일개미"> <strong>일개미형</strong> - 잠시도 쉬지 못하는</div>
+                    <div class="animal-item"><img src="https://hanuipyo.github.io/animal_mbti/카멜레온.png" alt="카멜레온"> <strong>카멜레온형</strong> - 매일 다른 꿈을 꾸는</div>
+                    <div class="animal-item"><img src="https://hanuipyo.github.io/animal_mbti/부엉이.png" alt="부엉이"> <strong>부엉이형</strong> - 항상 곰곰히 고민해보는</div>
+                    <div class="animal-item"><img src="https://hanuipyo.github.io/animal_mbti/황제펭귄.png" alt="황제펭귄"> <strong>황제펭귄형</strong> - 혼자선 못사는</div>
+                    <div class="animal-item"><img src="https://hanuipyo.github.io/animal_mbti/앵무새.png" alt="앵무새"> <strong>앵무새형</strong> - 항상 알려주고 싶은</div>
+                </div>
+
+                <button class="btn" onclick="startQuiz()">테스트 시작하기</button>
+            </div>
+
+            <!-- 퀴즈 화면 -->
+            <div class="quiz-screen" id="quizScreen">
+                <div class="progress-bar">
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="question-number" id="questionNumber">질문 1 / 10</div>
+                <div class="question" id="question"></div>
+                <div class="answers" id="answers"></div>
+            </div>
+
+            <!-- 결과 화면 -->
+            <div class="result-screen" id="resultScreen">
+                <h1>당신의 동물 유형은?</h1>
+                <div class="result-animal" id="resultAnimal"></div>
+                <div class="result-type" id="resultType"></div>
+                <div class="result-description" id="resultDescription"></div>
+                <div class="share-text">
+                    💡 이 결과를 친구들과 공유해보세요!
+                </div>
+                <button class="btn" onclick="restartQuiz()">다시 테스트하기</button>
+            </div>
+        </div>
+
+        <script>
+            // 각 동물 유형의 점수를 저장하는 객체
+            // ant: 일개미, chameleon: 카멜레온, owl: 부엉이, penguin: 황제펭귄, parrot: 앵무새
+            let scores = {
+                ant: 0,         // 일개미 점수
+                chameleon: 0,   // 카멜레온 점수
+                owl: 0,         // 부엉이 점수
+                penguin: 0,     // 황제펭귄 점수
+                parrot: 0       // 앵무새 점수
+            };
+
+            let currentQuestion = 0; // 현재 질문 번호 (0부터 시작)
+
+            const MAX_PARTICIPANTS = 120; // 최대 참여 인원수
+
+            // Google Apps Script 웹 앱 URL
+            // ⚠️ 중요: SETUP_GUIDE.md를 참고하여 Google Apps Script를 배포한 후 여기에 URL을 입력하세요
+            // 배포 후 받은 웹 앱 URL을 아래에 입력하세요
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwnz50UoAHG9eIMt2Rqie5UUGTkyFVsL0roE5fKE6roMknGNaXiaw_T26HsMCDIq4Q/exec';
+            // 예: 'https://script.google.com/macros/s/AKfycby.../exec'
             
-            <div class="user-info-form">
-                <div class="info-note">
-                    💡 소속, 이름, 이메일은 통계 분석에만 사용되며, 개인정보는 안전하게 관리됩니다.
-                </div>
-                
-                <div class="form-group">
-                    <label for="userSchool">소속 기관</label>
-                    <input type="text" id="userSchool" placeholder="예: 서울초등학교" autocomplete="organization">
-                    <div class="error-message" id="schoolError"></div>
-                    <small style="color: #666; font-size: 0.85em; margin-top: 5px; display: block;">
-                        기관의 공식 명칭을 입력해주세요 (예: OO초등학교, OO중학교 등)
-                    </small>
-                </div>
-                
-                <div class="form-group">
-                    <label for="userName">이름</label>
-                    <input type="text" id="userName" placeholder="예: 홍길동" autocomplete="name">
-                    <div class="error-message" id="nameError"></div>
-                    <small style="color: #666; font-size: 0.85em; margin-top: 5px; display: block;">
-                        성과 이름을 모두 입력해주세요
-                    </small>
-                </div>
-                
-                <div class="form-group">
-                    <label for="userEmail">이메일</label>
-                    <input type="email" id="userEmail" placeholder="예: hong@example.com" autocomplete="email">
-                    <div class="error-message" id="emailError"></div>
-                    <small style="color: #666; font-size: 0.85em; margin-top: 5px; display: block;">
-                        결과 확인 및 통계 분석에 사용됩니다
-                    </small>
-                </div>
-                
-                <div class="error-message" id="userInfoError" style="text-align: center; margin-top: 10px;"></div>
-                
-                <button class="btn" onclick="saveUserInfo()" style="width: 100%; margin-top: 10px;">다음</button>
-            </div>
-        </div>
+            // 보안 토큰 (Google Apps Script의 SECRET_TOKEN과 동일한 값이어야 합니다)
+            // ⚠️ 중요: google-apps-script.gs의 SECRET_TOKEN과 동일한 값으로 설정하세요
+            const API_TOKEN = 'growthtogetherexperience';
 
-        <!-- 시작 화면 -->
-        <div class="start-screen" id="startScreen">
-            <h1>🎯 나의 동물 유형 테스트</h1>
-            <p class="subtitle">나는 어떤 동물 유형일까?</p>
-            
-            <div class="animal-intro">
-                <h3>🌟 5가지 동물 유형</h3>
-                <div class="animal-item"><img src="https://hanuipyo.github.io/animal_mbti/일개미.png" alt="일개미"> <strong>일개미형</strong> - 잠시도 쉬지 못하는</div>
-                <div class="animal-item"><img src="https://hanuipyo.github.io/animal_mbti/카멜레온.png" alt="카멜레온"> <strong>카멜레온형</strong> - 매일 다른 꿈을 꾸는</div>
-                <div class="animal-item"><img src="https://hanuipyo.github.io/animal_mbti/부엉이.png" alt="부엉이"> <strong>부엉이형</strong> - 항상 곰곰히 고민해보는</div>
-                <div class="animal-item"><img src="https://hanuipyo.github.io/animal_mbti/황제펭귄.png" alt="황제펭귄"> <strong>황제펭귄형</strong> - 혼자선 못사는</div>
-                <div class="animal-item"><img src="https://hanuipyo.github.io/animal_mbti/앵무새.png" alt="앵무새"> <strong>앵무새형</strong> - 항상 알려주고 싶은</div>
-            </div>
+            // 통계 데이터 캐시 (로딩 성능 향상)
+            let cachedStats = null;
+            let statsLoading = false;
 
-            <button class="btn" onclick="startQuiz()">테스트 시작하기</button>
-        </div>
+            // 사용자 정보 저장
+            let userInfo = {
+                school: '',
+                name: '',
+                email: ''
+            };
 
-        <!-- 퀴즈 화면 -->
-        <div class="quiz-screen" id="quizScreen">
-            <div class="progress-bar">
-                <div class="progress" id="progress"></div>
-            </div>
-            <div class="question-number" id="questionNumber">질문 1 / 10</div>
-            <div class="question" id="question"></div>
-            <div class="answers" id="answers"></div>
-        </div>
-
-        <!-- 결과 화면 -->
-        <div class="result-screen" id="resultScreen">
-            <h1>당신의 동물 유형은?</h1>
-            <div class="result-animal" id="resultAnimal"></div>
-            <div class="result-type" id="resultType"></div>
-            <div class="result-description" id="resultDescription"></div>
-            <div class="share-text">
-                💡 이 결과를 친구들과 공유해보세요!
-            </div>
-            <button class="btn" onclick="restartQuiz()">다시 테스트하기</button>
-        </div>
-    </div>
-
-    <script>
-        // 각 동물 유형의 점수를 저장하는 객체
-        // ant: 일개미, chameleon: 카멜레온, owl: 부엉이, penguin: 황제펭귄, parrot: 앵무새
-        let scores = {
-            ant: 0,         // 일개미 점수
-            chameleon: 0,   // 카멜레온 점수
-            owl: 0,         // 부엉이 점수
-            penguin: 0,     // 황제펭귄 점수
-            parrot: 0       // 앵무새 점수
-        };
-
-        let currentQuestion = 0; // 현재 질문 번호 (0부터 시작)
-
-        const MAX_PARTICIPANTS = 120; // 최대 참여 인원수
-
-        // Google Apps Script 웹 앱 URL
-        // ⚠️ 중요: SETUP_GUIDE.md를 참고하여 Google Apps Script를 배포한 후 여기에 URL을 입력하세요
-        // 배포 후 받은 웹 앱 URL을 아래에 입력하세요
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzldBQuAXFy_RMZRqUIvmaKOy53JguQbX2XbVnk6xhn3V3Mq0A-RPhITktt-F2BX23P/exec';
-        // 예: 'https://script.google.com/macros/s/AKfycby.../exec'
-        
-        // 보안 토큰 (Google Apps Script의 SECRET_TOKEN과 동일한 값이어야 합니다)
-        // ⚠️ 중요: google-apps-script.gs의 SECRET_TOKEN과 동일한 값으로 설정하세요
-        const API_TOKEN = 'growthtogetherexperience';
-
-        // 통계 데이터 캐시 (로딩 성능 향상)
-        let cachedStats = null;
-        let statsLoading = false;
-
-        // 사용자 정보 저장
-        let userInfo = {
-            school: '',
-            name: '',
-            email: ''
+        // 동물 유형 영문 → 한글 변환 매핑
+        const animalTypeNames = {
+            ant: '일개미',
+            chameleon: '카멜레온',
+            owl: '부엉이',
+            penguin: '황제펭귄',
+            parrot: '앵무새'
         };
 
         // 성향이 비슷한 동물 유형 매핑 (균등 배정 시 사용)
@@ -454,616 +463,617 @@
             parrot: ['chameleon', 'penguin'] // 앵무새 ↔ 카멜레온, 황제펭귄 (소통과 다양성)
         };
 
-        // Google Sheets에서 통계를 불러오는 함수 (비동기)
-        async function loadStatistics() {
-            // 캐시된 데이터가 있고 최근에 로드했다면 캐시 사용
-            if (cachedStats && !statsLoading) {
-                return cachedStats;
-            }
-
-            // URL이 설정되지 않았으면 기본값 반환
-            if (!SCRIPT_URL || SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
-                console.warn('Google Apps Script URL이 설정되지 않았습니다. SETUP_GUIDE.md를 참고하세요.');
-                return {
-                    ant: 0,
-                    chameleon: 0,
-                    owl: 0,
-                    penguin: 0,
-                    parrot: 0,
-                    total: 0
-                };
-            }
-
-            try {
-                statsLoading = true;
-                const response = await fetch(`${SCRIPT_URL}?action=getStats`);
-                
-                // Google Apps Script는 리다이렉트를 사용할 수 있으므로 처리
-                let finalResponse = response;
-                if (response.redirected) {
-                    finalResponse = await fetch(response.url);
+            // Google Sheets에서 통계를 불러오는 함수 (비동기)
+            async function loadStatistics() {
+                // 캐시된 데이터가 있고 최근에 로드했다면 캐시 사용
+                if (cachedStats && !statsLoading) {
+                    return cachedStats;
                 }
-                
-                const data = await finalResponse.json();
-                
-                if (data.success && data.stats) {
-                    cachedStats = data.stats;
-                    return data.stats;
-                } else {
-                    throw new Error(data.error || '통계를 불러올 수 없습니다.');
+
+                // URL이 설정되지 않았으면 기본값 반환
+                if (!SCRIPT_URL || SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+                    console.warn('Google Apps Script URL이 설정되지 않았습니다. SETUP_GUIDE.md를 참고하세요.');
+                    return {
+                        ant: 0,
+                        chameleon: 0,
+                        owl: 0,
+                        penguin: 0,
+                        parrot: 0,
+                        total: 0
+                    };
                 }
-            } catch (error) {
-                console.error('통계 불러오기 실패:', error);
-                console.error('에러 상세:', error.message);
-                // 에러 발생 시 기본값 반환
-                return {
-                    ant: 0,
-                    chameleon: 0,
-                    owl: 0,
-                    penguin: 0,
-                    parrot: 0,
-                    total: 0
-                };
-            } finally {
-                statsLoading = false;
-            }
-        }
 
-        // Google Sheets에 결과를 저장하는 함수 (비동기)
-        async function saveResultToSheets(animalType, originalType) {
-            // URL이 설정되지 않았으면 저장하지 않음
-            if (!SCRIPT_URL || SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
-                console.warn('Google Apps Script URL이 설정되지 않아 결과를 저장할 수 없습니다.');
-                return null;
-            }
-
-            // 사용자 정보 확인
-            if (!userInfo.school || !userInfo.name) {
-                console.warn('사용자 정보가 없어 결과를 저장할 수 없습니다.', userInfo);
-                // 사용자 정보가 없어도 저장은 시도하되, 빈 값으로 전송
-            }
-
-            try {
-                // User Agent 정보 수집
-                const userAgent = navigator.userAgent;
-                
-                // Google Apps Script에 POST 요청 (FormData 사용)
-                const formData = new FormData();
-                formData.append('action', 'saveResult');
-                formData.append('token', API_TOKEN); // 보안 토큰 추가
-                formData.append('animalType', animalType);
-                formData.append('originalType', originalType || animalType);
-                formData.append('userAgent', userAgent);
-                formData.append('school', userInfo.school || ''); // 소속 정보
-                formData.append('name', userInfo.name || ''); // 이름 정보
-                formData.append('email', userInfo.email || ''); // 이메일 정보
-                
-                // 디버깅: 전송할 데이터 확인
-                console.log('저장할 사용자 정보:', {
-                    school: userInfo.school || '(없음)',
-                    name: userInfo.name || '(없음)',
-                    email: userInfo.email || '(없음)',
-                    animalType: animalType
-                });
-
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                // Google Apps Script는 리다이렉트를 사용하므로 다시 fetch
-                let finalResponse = response;
-                if (response.redirected || response.status === 200) {
-                    try {
-                        finalResponse = await fetch(response.url);
-                    } catch (e) {
-                        // 리다이렉트가 없으면 원본 응답 사용
-                        finalResponse = response;
-                    }
-                }
-                
-                const data = await finalResponse.json();
-                
-                if (data.success) {
-                    // 캐시 업데이트
-                    if (data.stats) {
-                        cachedStats = data.stats;
-                    }
-                    return data.stats;
-                } else {
-                    throw new Error(data.error || '결과를 저장할 수 없습니다.');
-                }
-            } catch (error) {
-                console.error('결과 저장 실패:', error);
-                return null;
-            }
-        }
-
-        // Enter 키로 사용자 정보 입력 가능하도록 처리
-        document.addEventListener('DOMContentLoaded', function() {
-            // 사용자 정보 입력 화면
-            const schoolInput = document.getElementById('userSchool');
-            const nameInput = document.getElementById('userName');
-            const emailInput = document.getElementById('userEmail');
-            
-            if (schoolInput && nameInput && emailInput) {
-                schoolInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        nameInput.focus();
-                    }
-                });
-                
-                nameInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        emailInput.focus();
-                    }
-                });
-                
-                emailInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        saveUserInfo();
-                    }
-                });
-            }
-        });
-
-
-        // 균등 배정 로직: 가장 많은 유형과 가장 적은 유형의 차이가 3명 이상이면 조정 (비동기)
-        async function adjustForBalance(originalType) {
-            const stats = await loadStatistics();
-            const total = stats.total || (stats.ant + stats.chameleon + stats.owl + stats.penguin + stats.parrot);
-            
-            // 최대 인원수에 도달했으면 더 이상 추가하지 않음
-            if (total >= MAX_PARTICIPANTS) {
-                return originalType;
-            }
-
-            // 각 유형의 인원수를 배열로 변환
-            const typeArray = [
-                { type: 'ant', count: stats.ant || 0 },
-                { type: 'chameleon', count: stats.chameleon || 0 },
-                { type: 'owl', count: stats.owl || 0 },
-                { type: 'penguin', count: stats.penguin || 0 },
-                { type: 'parrot', count: stats.parrot || 0 }
-            ];
-
-            // 인원수 순으로 정렬
-            typeArray.sort((a, b) => a.count - b.count);
-            
-            const maxType = typeArray[typeArray.length - 1]; // 가장 많은 유형
-            const minType = typeArray[0]; // 가장 적은 유형
-            
-            // 차이가 3명 이상인지 확인
-            if (maxType.count - minType.count >= 3) {
-                // 원래 유형이 가장 많은 유형이면, 가장 적은 유형 중에서 성향이 비슷한 것으로 변경
-                if (originalType === maxType.type) {
-                    // 가장 적은 유형들 중에서 성향이 비슷한 유형 찾기
-                    const minTypes = typeArray.filter(t => t.count === minType.count);
+                try {
+                    statsLoading = true;
+                    const response = await fetch(`${SCRIPT_URL}?action=getStats`);
                     
-                    for (let minT of minTypes) {
-                        // 원래 유형과 성향이 비슷한 유형인지 확인
-                        if (similarTypes[originalType] && similarTypes[originalType].includes(minT.type)) {
-                            return minT.type; // 성향이 비슷한 적은 유형으로 변경
+                    // Google Apps Script는 리다이렉트를 사용할 수 있으므로 처리
+                    let finalResponse = response;
+                    if (response.redirected) {
+                        finalResponse = await fetch(response.url);
+                    }
+                    
+                    const data = await finalResponse.json();
+                    
+                    if (data.success && data.stats) {
+                        cachedStats = data.stats;
+                        return data.stats;
+                    } else {
+                        throw new Error(data.error || '통계를 불러올 수 없습니다.');
+                    }
+                } catch (error) {
+                    console.error('통계 불러오기 실패:', error);
+                    console.error('에러 상세:', error.message);
+                    // 에러 발생 시 기본값 반환
+                    return {
+                        ant: 0,
+                        chameleon: 0,
+                        owl: 0,
+                        penguin: 0,
+                        parrot: 0,
+                        total: 0
+                    };
+                } finally {
+                    statsLoading = false;
+                }
+            }
+
+            // Google Sheets에 결과를 저장하는 함수 (비동기)
+            async function saveResultToSheets(animalType, originalType) {
+                // URL이 설정되지 않았으면 저장하지 않음
+                if (!SCRIPT_URL || SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+                    console.warn('Google Apps Script URL이 설정되지 않아 결과를 저장할 수 없습니다.');
+                    return null;
+                }
+
+                // 사용자 정보 확인
+                if (!userInfo.school || !userInfo.name) {
+                    console.warn('사용자 정보가 없어 결과를 저장할 수 없습니다.', userInfo);
+                    // 사용자 정보가 없어도 저장은 시도하되, 빈 값으로 전송
+                }
+
+                try {
+                    // User Agent 정보 수집
+                    const userAgent = navigator.userAgent;
+                    
+                    // Google Apps Script에 POST 요청 (FormData 사용)
+                    const formData = new FormData();
+                    formData.append('action', 'saveResult');
+                    formData.append('token', API_TOKEN); // 보안 토큰 추가
+                    // 동물 유형을 한글로 변환하여 저장
+                    formData.append('animalType', animalTypeNames[animalType] || animalType);
+                    formData.append('originalType', animalTypeNames[originalType] || originalType || animalTypeNames[animalType] || animalType);
+                    formData.append('userAgent', userAgent);
+                    formData.append('school', userInfo.school || ''); // 소속 정보
+                    formData.append('name', userInfo.name || ''); // 이름 정보
+                    formData.append('email', userInfo.email || ''); // 이메일 정보
+                    
+                    // 디버깅: 전송할 데이터 확인
+                    console.log('저장할 사용자 정보:', {
+                        school: userInfo.school || '(없음)',
+                        name: userInfo.name || '(없음)',
+                        email: userInfo.email || '(없음)',
+                        animalType: animalType
+                    });
+
+                    const response = await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    // Google Apps Script는 리다이렉트를 사용하므로 다시 fetch
+                    let finalResponse = response;
+                    if (response.redirected || response.status === 200) {
+                        try {
+                            finalResponse = await fetch(response.url);
+                        } catch (e) {
+                            // 리다이렉트가 없으면 원본 응답 사용
+                            finalResponse = response;
                         }
                     }
                     
-                    // 성향이 비슷한 유형이 없으면 가장 적은 유형으로 변경
-                    return minType.type;
+                    const data = await finalResponse.json();
+                    
+                    if (data.success) {
+                        // 캐시 업데이트
+                        if (data.stats) {
+                            cachedStats = data.stats;
+                        }
+                        return data.stats;
+                    } else {
+                        throw new Error(data.error || '결과를 저장할 수 없습니다.');
+                    }
+                } catch (error) {
+                    console.error('결과 저장 실패:', error);
+                    return null;
                 }
             }
-            
-            // 차이가 3명 미만이거나 원래 유형이 가장 많은 유형이 아니면 그대로 반환
-            return originalType;
-        }
 
-        // 10가지 설문 질문과 각 답변의 점수 배분
-        const questions = [
-            {
-                question: "주말에 친구들과 약속을 잡을 때 나는?",
-                answers: [
-                    { text: "약속 장소부터 동선까지 꼼꼼하게 계획하고 예약한다", type: "ant" },
-                    { text: "그때그때 분위기 봐서 즉흥적으로 정하는 게 좋다", type: "chameleon" },
-                    { text: "장소의 리뷰나 정보를 미리 찾아보고 신중하게 결정한다", type: "owl" },
-                    { text: "모두의 의견을 물어보고 다 같이 결정한다", type: "penguin" },
-                    { text: "내가 알고 있는 좋은 장소를 추천하고 정보를 공유한다", type: "parrot" }
-                ]
-            },
-            {
-                question: "여행을 계획할 때 나의 스타일은?",
-                answers: [
-                    { text: "일정표를 만들어 시간대별로 상세하게 계획한다", type: "ant" },
-                    { text: "대충 목적지만 정하고 현지에서 자유롭게 돌아다닌다", type: "chameleon" },
-                    { text: "각 장소의 특징을 조사하고 최적의 루트를 찾는다", type: "owl" },
-                    { text: "함께 가는 사람들과 의논하며 일정을 짠다", type: "penguin" },
-                    { text: "여행 정보를 찾아서 동행자들에게 공유한다", type: "parrot" }
-                ]
-            },
-            {
-                question: "새로운 취미를 시작할 때?",
-                answers: [
-                    { text: "관련 책이나 강의를 찾아보며 체계적으로 배운다", type: "ant" },
-                    { text: "일단 재미있어 보이면 바로 시작해본다", type: "chameleon" },
-                    { text: "왜 하고 싶은지, 나에게 맞는지 깊이 고민한다", type: "owl" },
-                    { text: "함께 할 사람을 찾거나 동호회에 가입한다", type: "penguin" },
-                    { text: "배우면서 알게 된 팁을 주변에 알려준다", type: "parrot" }
-                ]
-            },
-            {
-                question: "친구가 고민 상담을 요청하면?",
-                answers: [
-                    { text: "밤을 새워서라도 성심성의껏 들어주고 도와준다", type: "ant" },
-                    { text: "다양한 관점에서 새로운 해결책을 제시한다", type: "chameleon" },
-                    { text: "문제의 본질을 파악하고 신중하게 조언한다", type: "owl" },
-                    { text: "공감하며 들어주고 함께 고민해준다", type: "penguin" },
-                    { text: "비슷한 경험이나 정보를 자세히 공유해준다", type: "parrot" }
-                ]
-            },
-            {
-                question: "SNS나 온라인 활동에서 나는?",
-                answers: [
-                    { text: "매일 꾸준히 기록하고 정리하는 편이다", type: "ant" },
-                    { text: "관심사가 자주 바뀌어서 올리는 내용도 다양하다", type: "chameleon" },
-                    { text: "올리기 전에 내용을 여러 번 고민하고 수정한다", type: "owl" },
-                    { text: "주로 다른 사람들의 글에 댓글을 달며 소통한다", type: "penguin" },
-                    { text: "유용한 정보나 알게 된 것을 적극적으로 공유한다", type: "parrot" }
-                ]
-            },
-            {
-                question: "쇼핑을 할 때 나는?",
-                answers: [
-                    { text: "필요한 물건 리스트를 만들고 꼼꼼히 비교해서 산다", type: "ant" },
-                    { text: "그때그때 눈에 띄는 것을 충동적으로 산다", type: "chameleon" },
-                    { text: "가성비와 실용성을 따져보며 신중하게 고른다", type: "owl" },
-                    { text: "친구나 가족과 함께 가서 의견을 듣고 산다", type: "penguin" },
-                    { text: "좋은 제품을 발견하면 주변 사람들에게 추천한다", type: "parrot" }
-                ]
-            },
-            {
-                question: "영화나 책, 콘텐츠를 선택할 때?",
-                answers: [
-                    { text: "평점이 높거나 검증된 작품을 선택한다", type: "ant" },
-                    { text: "독특하거나 실험적인 새로운 작품을 찾는다", type: "chameleon" },
-                    { text: "줄거리와 리뷰를 꼼꼼히 읽어보고 결정한다", type: "owl" },
-                    { text: "친구들이 추천하거나 함께 볼 수 있는 걸 고른다", type: "penguin" },
-                    { text: "본 후에 다른 사람들에게 후기를 열심히 알려준다", type: "parrot" }
-                ]
-            },
-            {
-                question: "약속 시간에 대한 나의 태도는?",
-                answers: [
-                    { text: "항상 10분 전에 도착하려고 노력한다", type: "ant" },
-                    { text: "약속 시간이 딱딱하지 않은 게 편하다", type: "chameleon" },
-                    { text: "교통상황 등을 고려해 여유롭게 출발한다", type: "owl" },
-                    { text: "함께 가는 사람에게 맞춰서 움직인다", type: "penguin" },
-                    { text: "늦을 것 같으면 미리미리 상황을 공유한다", type: "parrot" }
-                ]
-            },
-            {
-                question: "모임이나 파티에서 나의 역할은?",
-                answers: [
-                    { text: "준비나 뒷정리를 자연스럽게 맡아서 한다", type: "ant" },
-                    { text: "재미있는 아이디어나 게임을 제안한다", type: "chameleon" },
-                    { text: "한발 물러나서 분위기를 관찰한다", type: "owl" },
-                    { text: "사람들 사이를 연결하고 대화를 이어간다", type: "penguin" },
-                    { text: "최근에 알게 된 이야기를 들려준다", type: "parrot" }
-                ]
-            },
-            {
-                question: "스트레스를 받거나 힘들 때 나는?",
-                answers: [
-                    { text: "할 일을 하나씩 처리하면서 극복한다", type: "ant" },
-                    { text: "평소와 전혀 다른 일을 하며 기분전환한다", type: "chameleon" },
-                    { text: "혼자만의 시간을 가지며 생각을 정리한다", type: "owl" },
-                    { text: "친한 사람들을 만나 이야기를 나눈다", type: "penguin" },
-                    { text: "비슷한 경험을 한 사람들의 이야기를 찾아본다", type: "parrot" }
-                ]
-            }
-        ];
-
-        // 각 동물 유형에 대한 결과 설명
-        // 이미지 파일 경로: 같은 폴더에 있는 이미지 파일을 사용합니다
-        const results = {
-            ant: {
-                emoji: "🐜",
-                image: "https://hanuipyo.github.io/animal_mbti/일개미.png",  // 일개미 이미지 파일 경로
-                title: "일개미형",
-                subtitle: "잠시도 쉬지 못하는",
-                description: `
-                    <h3>✨ 당신은 일개미형입니다!</h3>
-                    <p><strong>특징:</strong> 성실함과 근면함이 몸에 밴 당신! 계획적이고 꾸준하게 자신의 목표를 향해 나아가는 노력파입니다.</p>
-                    <p><strong>장점:</strong> 책임감이 강하고 맡은 일은 반드시 완수합니다. 성실한 모습으로 주변 사람들에게 신뢰를 얻습니다.</p>
-                    <p><strong>주의사항:</strong> 때로는 휴식도 필요해요! 번아웃을 조심하고 자신을 돌보는 시간도 가지세요.</p>
-                    <p><strong>추천:</strong> 완벽함보다는 완성을 목표로, 가끔은 여유를 가져보는 것은 어떨까요?</p>
-                `
-            },
-            chameleon: {
-                emoji: "🦎",
-                image: "https://hanuipyo.github.io/animal_mbti/카멜레온.png",  // 카멜레온 이미지 파일 경로
-                title: "카멜레온형",
-                subtitle: "매일 다른 꿈을 꾸는",
-                description: `
-                    <h3>✨ 당신은 카멜레온형입니다!</h3>
-                    <p><strong>특징:</strong> 창의적이고 유연한 사고의 소유자! 늘 새로운 것을 시도하고 변화를 두려워하지 않는 혁신가입니다.</p>
-                    <p><strong>장점:</strong> 다양한 시도를 하며 새로운 가능성을 발견합니다. 틀에 박히지 않은 사고로 신선한 해결책을 제시합니다.</p>
-                    <p><strong>주의사항:</strong> 너무 많은 변화는 주변을 혼란스럽게 할 수도 있어요. 때로는 일관성도 필요합니다.</p>
-                    <p><strong>추천:</strong> 창의성과 안정성의 균형을 찾아보세요. 새로운 시도에 체계를 더한다면 완벽합니다!</p>
-                `
-            },
-            owl: {
-                emoji: "🦉",
-                image: "https://hanuipyo.github.io/animal_mbti/부엉이.png",  // 부엉이 이미지 파일 경로
-                title: "부엉이형",
-                subtitle: "항상 곰곰히 고민해보는",
-                description: `
-                    <h3>✨ 당신은 부엉이형입니다!</h3>
-                    <p><strong>특징:</strong> 신중하고 분석적인 사고의 달인! 깊이 있는 통찰력으로 사람과 상황을 이해하는 지혜로운 사람입니다.</p>
-                    <p><strong>장점:</strong> 문제의 본질을 파악하는 능력이 뛰어나고, 깊이 있는 대화와 이해를 중요시합니다.</p>
-                    <p><strong>주의사항:</strong> 너무 오래 고민하다 보면 기회를 놓칠 수 있어요. 때로는 직관도 믿어보세요.</p>
-                    <p><strong>추천:</strong> 당신의 통찰력을 다른 사람들과 나누면 더 큰 시너지가 날 거예요!</p>
-                `
-            },
-            penguin: {
-                emoji: "🐧",
-                image: "https://hanuipyo.github.io/animal_mbti/황제펭귄.png",  // 황제펭귄 이미지 파일 경로
-                title: "황제펭귄형",
-                subtitle: "혼자선 못사는",
-                description: `
-                    <h3>✨ 당신은 황제펭귄형입니다!</h3>
-                    <p><strong>특징:</strong> 협력과 소통의 달인! 함께하는 것을 즐기고 관계를 중시하는 사교적인 사람입니다.</p>
-                    <p><strong>장점:</strong> 사람들과의 협력을 통해 더 나은 결과를 만들어냅니다. 주변 사람들을 연결하고 화합을 이끌어냅니다.</p>
-                    <p><strong>주의사항:</strong> 때로는 혼자 결정하고 실행해야 할 때도 있어요. 독립성도 함께 키워보세요.</p>
-                    <p><strong>추천:</strong> 당신의 소통 능력은 큰 강점이에요. 모임의 분위기 메이커로 활약해보세요!</p>
-                `
-            },
-            parrot: {
-                emoji: "🦜",
-                image: "https://hanuipyo.github.io/animal_mbti/앵무새.png",  // 앵무새 이미지 파일 경로
-                title: "앵무새형",
-                subtitle: "항상 알려주고 싶은",
-                description: `
-                    <h3>✨ 당신은 앵무새형입니다!</h3>
-                    <p><strong>특징:</strong> 지식 공유의 열정가! 배운 것을 나누는 것을 좋아하고 소통을 중시하는 친절한 사람입니다.</p>
-                    <p><strong>장점:</strong> 정보를 쉽고 명확하게 전달하는 능력이 뛰어납니다. 유용한 정보 공유로 주변 사람들을 돕습니다.</p>
-                    <p><strong>주의사항:</strong> 때로는 듣는 것도 중요해요. 일방적인 전달보다는 쌍방향 소통을 시도해보세요.</p>
-                    <p><strong>추천:</strong> 당신의 전달력은 훌륭해요! 다른 사람들의 이야기도 귀 기울여 들어주면 더욱 완벽합니다.</p>
-                `
-            }
-        };
-
-        // 퀴즈를 시작하는 함수
-        function startQuiz() {
-            // 시작 화면을 숨기고 퀴즈 화면을 보여줍니다
-            document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('quizScreen').style.display = 'block';
-            showQuestion(); // 첫 번째 질문을 보여줍니다
-        }
-
-        // 현재 질문을 화면에 표시하는 함수
-        function showQuestion() {
-            const question = questions[currentQuestion]; // 현재 질문 데이터를 가져옵니다
-            
-            // 진행률 바를 업데이트합니다
-            const progress = ((currentQuestion + 1) / questions.length) * 100;
-            document.getElementById('progress').style.width = progress + '%';
-            
-            // 질문 번호를 표시합니다
-            document.getElementById('questionNumber').textContent = 
-                `질문 ${currentQuestion + 1} / ${questions.length}`;
-            
-            // 질문 내용을 표시합니다
-            document.getElementById('question').textContent = question.question;
-            
-            // 답변 선택지를 생성합니다
-            const answersDiv = document.getElementById('answers');
-            answersDiv.innerHTML = ''; // 기존 답변을 지웁니다
-            
-            // 각 답변 버튼을 만들어서 추가합니다
-            question.answers.forEach((answer, index) => {
-                const button = document.createElement('button');
-                button.className = 'answer-btn';
-                button.textContent = answer.text;
-                // 버튼을 클릭하면 selectAnswer 함수를 실행합니다
-                button.onclick = () => selectAnswer(answer.type);
-                answersDiv.appendChild(button);
+            // Enter 키로 사용자 정보 입력 가능하도록 처리
+            document.addEventListener('DOMContentLoaded', function() {
+                // 사용자 정보 입력 화면
+                const schoolInput = document.getElementById('userSchool');
+                const nameInput = document.getElementById('userName');
+                const emailInput = document.getElementById('userEmail');
+                
+                if (schoolInput && nameInput && emailInput) {
+                    schoolInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            nameInput.focus();
+                        }
+                    });
+                    
+                    nameInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            emailInput.focus();
+                        }
+                    });
+                    
+                    emailInput.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            saveUserInfo();
+                        }
+                    });
+                }
             });
-        }
 
-        // 답변을 선택했을 때 실행되는 함수
-        function selectAnswer(type) {
-            // 선택한 동물 유형의 점수를 1점 증가시킵니다
-            scores[type]++;
-            
-            // 다음 질문으로 이동합니다
-            currentQuestion++;
-            
-            // 모든 질문을 다 답했는지 확인합니다
-            if (currentQuestion < questions.length) {
-                // 아직 질문이 남아있으면 다음 질문을 보여줍니다
-                showQuestion();
-            } else {
-                // 모든 질문을 답했으면 결과를 보여줍니다
-                showResult();
+
+            // 균등 배정 로직: 가장 많은 유형과 가장 적은 유형의 차이가 3명 이상이면 조정 (비동기)
+            async function adjustForBalance(originalType) {
+                const stats = await loadStatistics();
+                const total = stats.total || (stats.ant + stats.chameleon + stats.owl + stats.penguin + stats.parrot);
+                
+                // 최대 인원수에 도달했으면 더 이상 추가하지 않음
+                if (total >= MAX_PARTICIPANTS) {
+                    return originalType;
+                }
+
+                // 각 유형의 인원수를 배열로 변환
+                const typeArray = [
+                    { type: 'ant', count: stats.ant || 0 },
+                    { type: 'chameleon', count: stats.chameleon || 0 },
+                    { type: 'owl', count: stats.owl || 0 },
+                    { type: 'penguin', count: stats.penguin || 0 },
+                    { type: 'parrot', count: stats.parrot || 0 }
+                ];
+
+                // 인원수 순으로 정렬
+                typeArray.sort((a, b) => a.count - b.count);
+                
+                const maxType = typeArray[typeArray.length - 1]; // 가장 많은 유형
+                const minType = typeArray[0]; // 가장 적은 유형
+                
+                // 차이가 3명 이상인지 확인
+                if (maxType.count - minType.count >= 3) {
+                    // 원래 유형이 가장 많은 유형이면, 가장 적은 유형 중에서 성향이 비슷한 것으로 변경
+                    if (originalType === maxType.type) {
+                        // 가장 적은 유형들 중에서 성향이 비슷한 유형 찾기
+                        const minTypes = typeArray.filter(t => t.count === minType.count);
+                        
+                        for (let minT of minTypes) {
+                            // 원래 유형과 성향이 비슷한 유형인지 확인
+                            if (similarTypes[originalType] && similarTypes[originalType].includes(minT.type)) {
+                                return minT.type; // 성향이 비슷한 적은 유형으로 변경
+                            }
+                        }
+                        
+                        // 성향이 비슷한 유형이 없으면 가장 적은 유형으로 변경
+                        return minType.type;
+                    }
+                }
+                
+                // 차이가 3명 미만이거나 원래 유형이 가장 많은 유형이 아니면 그대로 반환
+                return originalType;
             }
-        }
 
-        // 결과를 계산하고 표시하는 함수 (비동기)
-        async function showResult() {
-            // 퀴즈 화면을 숨기고 결과 화면을 보여줍니다
-            document.getElementById('quizScreen').style.display = 'none';
-            document.getElementById('resultScreen').style.display = 'block';
-            
-            // 로딩 표시
-            document.getElementById('resultType').textContent = '결과 계산 중...';
-            
-            // 가장 높은 점수를 받은 동물 유형을 찾습니다
-            let maxScore = 0;
-            let originalResultType = '';
-            
-            // 모든 동물 유형의 점수를 확인합니다
-            for (let type in scores) {
-                if (scores[type] > maxScore) {
-                    maxScore = scores[type];
-                    originalResultType = type;
+            // 10가지 설문 질문과 각 답변의 점수 배분
+            const questions = [
+                {
+                    question: "주말에 친구들과 약속을 잡을 때 나는?",
+                    answers: [
+                        { text: "약속 장소부터 동선까지 꼼꼼하게 계획하고 예약한다", type: "ant" },
+                        { text: "그때그때 분위기 봐서 즉흥적으로 정하는 게 좋다", type: "chameleon" },
+                        { text: "장소의 리뷰나 정보를 미리 찾아보고 신중하게 결정한다", type: "owl" },
+                        { text: "모두의 의견을 물어보고 다 같이 결정한다", type: "penguin" },
+                        { text: "내가 알고 있는 좋은 장소를 추천하고 정보를 공유한다", type: "parrot" }
+                    ]
+                },
+                {
+                    question: "여행을 계획할 때 나의 스타일은?",
+                    answers: [
+                        { text: "일정표를 만들어 시간대별로 상세하게 계획한다", type: "ant" },
+                        { text: "대충 목적지만 정하고 현지에서 자유롭게 돌아다닌다", type: "chameleon" },
+                        { text: "각 장소의 특징을 조사하고 최적의 루트를 찾는다", type: "owl" },
+                        { text: "함께 가는 사람들과 의논하며 일정을 짠다", type: "penguin" },
+                        { text: "여행 정보를 찾아서 동행자들에게 공유한다", type: "parrot" }
+                    ]
+                },
+                {
+                    question: "새로운 취미를 시작할 때?",
+                    answers: [
+                        { text: "관련 책이나 강의를 찾아보며 체계적으로 배운다", type: "ant" },
+                        { text: "일단 재미있어 보이면 바로 시작해본다", type: "chameleon" },
+                        { text: "왜 하고 싶은지, 나에게 맞는지 깊이 고민한다", type: "owl" },
+                        { text: "함께 할 사람을 찾거나 동호회에 가입한다", type: "penguin" },
+                        { text: "배우면서 알게 된 팁을 주변에 알려준다", type: "parrot" }
+                    ]
+                },
+                {
+                    question: "친구가 고민 상담을 요청하면?",
+                    answers: [
+                        { text: "밤을 새워서라도 성심성의껏 들어주고 도와준다", type: "ant" },
+                        { text: "다양한 관점에서 새로운 해결책을 제시한다", type: "chameleon" },
+                        { text: "문제의 본질을 파악하고 신중하게 조언한다", type: "owl" },
+                        { text: "공감하며 들어주고 함께 고민해준다", type: "penguin" },
+                        { text: "비슷한 경험이나 정보를 자세히 공유해준다", type: "parrot" }
+                    ]
+                },
+                {
+                    question: "SNS나 온라인 활동에서 나는?",
+                    answers: [
+                        { text: "매일 꾸준히 기록하고 정리하는 편이다", type: "ant" },
+                        { text: "관심사가 자주 바뀌어서 올리는 내용도 다양하다", type: "chameleon" },
+                        { text: "올리기 전에 내용을 여러 번 고민하고 수정한다", type: "owl" },
+                        { text: "주로 다른 사람들의 글에 댓글을 달며 소통한다", type: "penguin" },
+                        { text: "유용한 정보나 알게 된 것을 적극적으로 공유한다", type: "parrot" }
+                    ]
+                },
+                {
+                    question: "쇼핑을 할 때 나는?",
+                    answers: [
+                        { text: "필요한 물건 리스트를 만들고 꼼꼼히 비교해서 산다", type: "ant" },
+                        { text: "그때그때 눈에 띄는 것을 충동적으로 산다", type: "chameleon" },
+                        { text: "가성비와 실용성을 따져보며 신중하게 고른다", type: "owl" },
+                        { text: "친구나 가족과 함께 가서 의견을 듣고 산다", type: "penguin" },
+                        { text: "좋은 제품을 발견하면 주변 사람들에게 추천한다", type: "parrot" }
+                    ]
+                },
+                {
+                    question: "영화나 책, 콘텐츠를 선택할 때?",
+                    answers: [
+                        { text: "평점이 높거나 검증된 작품을 선택한다", type: "ant" },
+                        { text: "독특하거나 실험적인 새로운 작품을 찾는다", type: "chameleon" },
+                        { text: "줄거리와 리뷰를 꼼꼼히 읽어보고 결정한다", type: "owl" },
+                        { text: "친구들이 추천하거나 함께 볼 수 있는 걸 고른다", type: "penguin" },
+                        { text: "본 후에 다른 사람들에게 후기를 열심히 알려준다", type: "parrot" }
+                    ]
+                },
+                {
+                    question: "약속 시간에 대한 나의 태도는?",
+                    answers: [
+                        { text: "항상 10분 전에 도착하려고 노력한다", type: "ant" },
+                        { text: "약속 시간이 딱딱하지 않은 게 편하다", type: "chameleon" },
+                        { text: "교통상황 등을 고려해 여유롭게 출발한다", type: "owl" },
+                        { text: "함께 가는 사람에게 맞춰서 움직인다", type: "penguin" },
+                        { text: "늦을 것 같으면 미리미리 상황을 공유한다", type: "parrot" }
+                    ]
+                },
+                {
+                    question: "모임이나 파티에서 나의 역할은?",
+                    answers: [
+                        { text: "준비나 뒷정리를 자연스럽게 맡아서 한다", type: "ant" },
+                        { text: "재미있는 아이디어나 게임을 제안한다", type: "chameleon" },
+                        { text: "한발 물러나서 분위기를 관찰한다", type: "owl" },
+                        { text: "사람들 사이를 연결하고 대화를 이어간다", type: "penguin" },
+                        { text: "최근에 알게 된 이야기를 들려준다", type: "parrot" }
+                    ]
+                },
+                {
+                    question: "스트레스를 받거나 힘들 때 나는?",
+                    answers: [
+                        { text: "할 일을 하나씩 처리하면서 극복한다", type: "ant" },
+                        { text: "평소와 전혀 다른 일을 하며 기분전환한다", type: "chameleon" },
+                        { text: "혼자만의 시간을 가지며 생각을 정리한다", type: "owl" },
+                        { text: "친한 사람들을 만나 이야기를 나눈다", type: "penguin" },
+                        { text: "비슷한 경험을 한 사람들의 이야기를 찾아본다", type: "parrot" }
+                    ]
+                }
+            ];
+
+            // 각 동물 유형에 대한 결과 설명
+            // 이미지 파일 경로: 같은 폴더에 있는 이미지 파일을 사용합니다
+            const results = {
+                ant: {
+                    emoji: "🐜",
+                    image: "https://hanuipyo.github.io/animal_mbti/일개미.png",  // 일개미 이미지 파일 경로
+                    title: "일개미형",
+                    subtitle: "잠시도 쉬지 못하는",
+                    description: `
+                        <h3>✨ 당신은 일개미형입니다!</h3>
+                        <p><strong>특징:</strong> 성실함과 근면함이 몸에 밴 당신! 계획적이고 꾸준하게 자신의 목표를 향해 나아가는 노력파입니다.</p>
+                        <p><strong>장점:</strong> 책임감이 강하고 맡은 일은 반드시 완수합니다. 성실한 모습으로 주변 사람들에게 신뢰를 얻습니다.</p>
+                        <p><strong>주의사항:</strong> 때로는 휴식도 필요해요! 번아웃을 조심하고 자신을 돌보는 시간도 가지세요.</p>
+                        <p><strong>추천:</strong> 완벽함보다는 완성을 목표로, 가끔은 여유를 가져보는 것은 어떨까요?</p>
+                    `
+                },
+                chameleon: {
+                    emoji: "🦎",
+                    image: "https://hanuipyo.github.io/animal_mbti/카멜레온.png",  // 카멜레온 이미지 파일 경로
+                    title: "카멜레온형",
+                    subtitle: "매일 다른 꿈을 꾸는",
+                    description: `
+                        <h3>✨ 당신은 카멜레온형입니다!</h3>
+                        <p><strong>특징:</strong> 창의적이고 유연한 사고의 소유자! 늘 새로운 것을 시도하고 변화를 두려워하지 않는 혁신가입니다.</p>
+                        <p><strong>장점:</strong> 다양한 시도를 하며 새로운 가능성을 발견합니다. 틀에 박히지 않은 사고로 신선한 해결책을 제시합니다.</p>
+                        <p><strong>주의사항:</strong> 너무 많은 변화는 주변을 혼란스럽게 할 수도 있어요. 때로는 일관성도 필요합니다.</p>
+                        <p><strong>추천:</strong> 창의성과 안정성의 균형을 찾아보세요. 새로운 시도에 체계를 더한다면 완벽합니다!</p>
+                    `
+                },
+                owl: {
+                    emoji: "🦉",
+                    image: "https://hanuipyo.github.io/animal_mbti/부엉이.png",  // 부엉이 이미지 파일 경로
+                    title: "부엉이형",
+                    subtitle: "항상 곰곰히 고민해보는",
+                    description: `
+                        <h3>✨ 당신은 부엉이형입니다!</h3>
+                        <p><strong>특징:</strong> 신중하고 분석적인 사고의 달인! 깊이 있는 통찰력으로 사람과 상황을 이해하는 지혜로운 사람입니다.</p>
+                        <p><strong>장점:</strong> 문제의 본질을 파악하는 능력이 뛰어나고, 깊이 있는 대화와 이해를 중요시합니다.</p>
+                        <p><strong>주의사항:</strong> 너무 오래 고민하다 보면 기회를 놓칠 수 있어요. 때로는 직관도 믿어보세요.</p>
+                        <p><strong>추천:</strong> 당신의 통찰력을 다른 사람들과 나누면 더 큰 시너지가 날 거예요!</p>
+                    `
+                },
+                penguin: {
+                    emoji: "🐧",
+                    image: "https://hanuipyo.github.io/animal_mbti/황제펭귄.png",  // 황제펭귄 이미지 파일 경로
+                    title: "황제펭귄형",
+                    subtitle: "혼자선 못사는",
+                    description: `
+                        <h3>✨ 당신은 황제펭귄형입니다!</h3>
+                        <p><strong>특징:</strong> 협력과 소통의 달인! 함께하는 것을 즐기고 관계를 중시하는 사교적인 사람입니다.</p>
+                        <p><strong>장점:</strong> 사람들과의 협력을 통해 더 나은 결과를 만들어냅니다. 주변 사람들을 연결하고 화합을 이끌어냅니다.</p>
+                        <p><strong>주의사항:</strong> 때로는 혼자 결정하고 실행해야 할 때도 있어요. 독립성도 함께 키워보세요.</p>
+                        <p><strong>추천:</strong> 당신의 소통 능력은 큰 강점이에요. 모임의 분위기 메이커로 활약해보세요!</p>
+                    `
+                },
+                parrot: {
+                    emoji: "🦜",
+                    image: "https://hanuipyo.github.io/animal_mbti/앵무새.png",  // 앵무새 이미지 파일 경로
+                    title: "앵무새형",
+                    subtitle: "항상 알려주고 싶은",
+                    description: `
+                        <h3>✨ 당신은 앵무새형입니다!</h3>
+                        <p><strong>특징:</strong> 지식 공유의 열정가! 배운 것을 나누는 것을 좋아하고 소통을 중시하는 친절한 사람입니다.</p>
+                        <p><strong>장점:</strong> 정보를 쉽고 명확하게 전달하는 능력이 뛰어납니다. 유용한 정보 공유로 주변 사람들을 돕습니다.</p>
+                        <p><strong>주의사항:</strong> 때로는 듣는 것도 중요해요. 일방적인 전달보다는 쌍방향 소통을 시도해보세요.</p>
+                        <p><strong>추천:</strong> 당신의 전달력은 훌륭해요! 다른 사람들의 이야기도 귀 기울여 들어주면 더욱 완벽합니다.</p>
+                    `
+                }
+            };
+
+            // 퀴즈를 시작하는 함수
+            function startQuiz() {
+                // 시작 화면을 숨기고 퀴즈 화면을 보여줍니다
+                document.getElementById('startScreen').style.display = 'none';
+                document.getElementById('quizScreen').style.display = 'block';
+                showQuestion(); // 첫 번째 질문을 보여줍니다
+            }
+
+            // 현재 질문을 화면에 표시하는 함수
+            function showQuestion() {
+                const question = questions[currentQuestion]; // 현재 질문 데이터를 가져옵니다
+                
+                // 진행률 바를 업데이트합니다
+                const progress = ((currentQuestion + 1) / questions.length) * 100;
+                document.getElementById('progress').style.width = progress + '%';
+                
+                // 질문 번호를 표시합니다
+                document.getElementById('questionNumber').textContent = 
+                    `질문 ${currentQuestion + 1} / ${questions.length}`;
+                
+                // 질문 내용을 표시합니다
+                document.getElementById('question').textContent = question.question;
+                
+                // 답변 선택지를 생성합니다
+                const answersDiv = document.getElementById('answers');
+                answersDiv.innerHTML = ''; // 기존 답변을 지웁니다
+                
+                // 각 답변 버튼을 만들어서 추가합니다
+                question.answers.forEach((answer, index) => {
+                    const button = document.createElement('button');
+                    button.className = 'answer-btn';
+                    button.textContent = answer.text;
+                    // 버튼을 클릭하면 selectAnswer 함수를 실행합니다
+                    button.onclick = () => selectAnswer(answer.type);
+                    answersDiv.appendChild(button);
+                });
+            }
+
+            // 답변을 선택했을 때 실행되는 함수
+            function selectAnswer(type) {
+                // 선택한 동물 유형의 점수를 1점 증가시킵니다
+                scores[type]++;
+                
+                // 다음 질문으로 이동합니다
+                currentQuestion++;
+                
+                // 모든 질문을 다 답했는지 확인합니다
+                if (currentQuestion < questions.length) {
+                    // 아직 질문이 남아있으면 다음 질문을 보여줍니다
+                    showQuestion();
+                } else {
+                    // 모든 질문을 답했으면 결과를 보여줍니다
+                    showResult();
                 }
             }
-            
-            // 균등 배정 로직 적용: 통계를 고려하여 결과 유형 조정
-            const finalResultType = await adjustForBalance(originalResultType);
-            
-            // 통계 확인 및 저장
-            const stats = await loadStatistics();
-            const total = stats.total || (stats.ant + stats.chameleon + stats.owl + stats.penguin + stats.parrot);
-            
-            // 최대 인원수에 도달하지 않았을 때만 통계 업데이트
-            if (total < MAX_PARTICIPANTS) {
-                await saveResultToSheets(finalResultType, originalResultType);
-            }
-            
-            // 결과를 화면에 표시합니다
-            const result = results[finalResultType];
-            // 이미지를 사용하여 동물을 표시합니다 (이모지 대신)
-            const resultAnimalDiv = document.getElementById('resultAnimal');
-            resultAnimalDiv.innerHTML = `<img src="${result.image}" alt="${result.title}">`;
-            document.getElementById('resultType').textContent = result.title;
-            
-            // 원래 결과와 조정된 결과가 다를 경우 안내 메시지 추가
-            let description = result.description;
-            if (originalResultType !== finalResultType) {
-                const originalResult = results[originalResultType];
-                description += `<p style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 8px; color: #856404; font-size: 0.9em;">
-                    <strong>💡 참고:</strong> 균등 배정을 위해 <strong>${originalResult.title}</strong>에서 <strong>${result.title}</strong>로 조정되었습니다.
-                </p>`;
-            }
-            
-            document.getElementById('resultDescription').innerHTML = description;
-        }
 
-        // 테스트를 다시 시작하는 함수
-        function restartQuiz() {
-            // 모든 변수를 초기화합니다
-            currentQuestion = 0;
-            scores = {
-                ant: 0,
-                chameleon: 0,
-                owl: 0,
-                penguin: 0,
-                parrot: 0
-            };
-            
-            // 사용자 정보도 초기화 (매번 새로 입력받기 위해)
-            userInfo.school = '';
-            userInfo.name = '';
-            userInfo.email = '';
-            
-            // 결과 화면을 숨기고 사용자 정보 입력 화면을 보여줍니다
-            document.getElementById('resultScreen').style.display = 'none';
-            document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('quizScreen').style.display = 'none';
-            showUserInfoScreen();
-            
-            // 입력 필드 초기화
-            document.getElementById('userSchool').value = '';
-            document.getElementById('userName').value = '';
-            document.getElementById('userEmail').value = '';
-            document.getElementById('schoolError').style.display = 'none';
-            document.getElementById('nameError').style.display = 'none';
-            document.getElementById('emailError').style.display = 'none';
-            document.getElementById('userInfoError').style.display = 'none';
-        }
+            // 결과를 계산하고 표시하는 함수 (비동기)
+            async function showResult() {
+                // 퀴즈 화면을 숨기고 결과 화면을 보여줍니다
+                document.getElementById('quizScreen').style.display = 'none';
+                document.getElementById('resultScreen').style.display = 'block';
+                
+                // 로딩 표시
+                document.getElementById('resultType').textContent = '결과 계산 중...';
+                
+                // 가장 높은 점수를 받은 동물 유형을 찾습니다
+                let maxScore = 0;
+                let originalResultType = '';
+                
+                // 모든 동물 유형의 점수를 확인합니다
+                for (let type in scores) {
+                    if (scores[type] > maxScore) {
+                        maxScore = scores[type];
+                        originalResultType = type;
+                    }
+                }
+                
+                // 균등 배정 로직 적용: 통계를 고려하여 결과 유형 조정
+                const finalResultType = await adjustForBalance(originalResultType);
+                
+                // 통계 확인 및 저장
+                const stats = await loadStatistics();
+                const total = stats.total || (stats.ant + stats.chameleon + stats.owl + stats.penguin + stats.parrot);
+                
+                // 최대 인원수에 도달하지 않았을 때만 통계 업데이트
+                if (total < MAX_PARTICIPANTS) {
+                    await saveResultToSheets(finalResultType, originalResultType);
+                }
+                
+                // 결과를 화면에 표시합니다
+                const result = results[finalResultType];
+                // 이미지를 사용하여 동물을 표시합니다 (이모지 대신)
+                const resultAnimalDiv = document.getElementById('resultAnimal');
+                resultAnimalDiv.innerHTML = `<img src="${result.image}" alt="${result.title}">`;
+                document.getElementById('resultType').textContent = result.title;
+                
+                // 원래 결과와 조정된 결과가 다를 경우 안내 메시지 추가
+                let description = result.description;
+                if (originalResultType !== finalResultType) {
+                    const originalResult = results[originalResultType];
+                    description += `<p style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 8px; color: #856404; font-size: 0.9em;">
+                        <strong>💡 참고:</strong> 균등 배정을 위해 <strong>${originalResult.title}</strong>에서 <strong>${result.title}</strong>로 조정되었습니다.
+                    </p>`;
+                }
+                
+                document.getElementById('resultDescription').innerHTML = description;
+            }
 
-        // 사용자 정보 저장 함수
-        function saveUserInfo() {
-            const school = document.getElementById('userSchool').value.trim();
-            const name = document.getElementById('userName').value.trim();
-            const email = document.getElementById('userEmail').value.trim();
-            
-            // 에러 메시지 초기화
-            document.getElementById('schoolError').style.display = 'none';
-            document.getElementById('nameError').style.display = 'none';
-            document.getElementById('emailError').style.display = 'none';
-            document.getElementById('userInfoError').style.display = 'none';
-            
-            let hasError = false;
-            
-            // 소속 검증
-            if (!school) {
-                document.getElementById('schoolError').textContent = '소속 기관을 입력해주세요.';
-                document.getElementById('schoolError').style.display = 'block';
-                hasError = true;
-            } else if (school.length < 2) {
-                document.getElementById('schoolError').textContent = '소속 기관명이 너무 짧습니다.';
-                document.getElementById('schoolError').style.display = 'block';
-                hasError = true;
+            // 테스트를 다시 시작하는 함수
+            function restartQuiz() {
+                // 모든 변수를 초기화합니다
+                currentQuestion = 0;
+                scores = {
+                    ant: 0,
+                    chameleon: 0,
+                    owl: 0,
+                    penguin: 0,
+                    parrot: 0
+                };
+                
+                // 사용자 정보도 초기화 (매번 새로 입력받기 위해)
+                userInfo.school = '';
+                userInfo.name = '';
+                userInfo.email = '';
+                
+                // 결과 화면을 숨기고 사용자 정보 입력 화면을 보여줍니다
+                document.getElementById('resultScreen').style.display = 'none';
+                document.getElementById('startScreen').style.display = 'none';
+                document.getElementById('quizScreen').style.display = 'none';
+                showUserInfoScreen();
+                
+                // 입력 필드 초기화
+                document.getElementById('userSchool').value = '';
+                document.getElementById('userName').value = '';
+                document.getElementById('userEmail').value = '';
+                document.getElementById('schoolError').style.display = 'none';
+                document.getElementById('nameError').style.display = 'none';
+                document.getElementById('emailError').style.display = 'none';
+                document.getElementById('userInfoError').style.display = 'none';
             }
-            
-            // 이름 검증
-            if (!name) {
-                document.getElementById('nameError').textContent = '이름을 입력해주세요.';
-                document.getElementById('nameError').style.display = 'block';
-                hasError = true;
-            } else if (name.length < 2) {
-                document.getElementById('nameError').textContent = '성과 이름을 모두 입력해주세요.';
-                document.getElementById('nameError').style.display = 'block';
-                hasError = true;
-            }
-            
-            // 이메일 검증
-            if (!email) {
-                document.getElementById('emailError').textContent = '이메일을 입력해주세요.';
-                document.getElementById('emailError').style.display = 'block';
-                hasError = true;
-            } else {
-                // 이메일 형식 검증 (간단한 정규식)
-                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailPattern.test(email)) {
-                    document.getElementById('emailError').textContent = '올바른 이메일 형식을 입력해주세요.';
-                    document.getElementById('emailError').style.display = 'block';
+
+            // 사용자 정보 저장 함수
+            function saveUserInfo() {
+                const school = document.getElementById('userSchool').value.trim();
+                const name = document.getElementById('userName').value.trim();
+                const email = document.getElementById('userEmail').value.trim();
+                
+                // 에러 메시지 초기화
+                document.getElementById('schoolError').style.display = 'none';
+                document.getElementById('nameError').style.display = 'none';
+                document.getElementById('emailError').style.display = 'none';
+                document.getElementById('userInfoError').style.display = 'none';
+                
+                let hasError = false;
+                
+                // 소속 검증
+                if (!school) {
+                    document.getElementById('schoolError').textContent = '소속 기관을 입력해주세요.';
+                    document.getElementById('schoolError').style.display = 'block';
+                    hasError = true;
+                } else if (school.length < 2) {
+                    document.getElementById('schoolError').textContent = '소속 기관명이 너무 짧습니다.';
+                    document.getElementById('schoolError').style.display = 'block';
                     hasError = true;
                 }
+                
+                // 이름 검증
+                if (!name) {
+                    document.getElementById('nameError').textContent = '이름을 입력해주세요.';
+                    document.getElementById('nameError').style.display = 'block';
+                    hasError = true;
+                } else if (name.length < 2) {
+                    document.getElementById('nameError').textContent = '성과 이름을 모두 입력해주세요.';
+                    document.getElementById('nameError').style.display = 'block';
+                    hasError = true;
+                }
+                
+                // 이메일 검증
+                if (!email) {
+                    document.getElementById('emailError').textContent = '이메일을 입력해주세요.';
+                    document.getElementById('emailError').style.display = 'block';
+                    hasError = true;
+                } else {
+                    // 이메일 형식 검증 (간단한 정규식)
+                    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailPattern.test(email)) {
+                        document.getElementById('emailError').textContent = '올바른 이메일 형식을 입력해주세요.';
+                        document.getElementById('emailError').style.display = 'block';
+                        hasError = true;
+                    }
+                }
+                
+                if (hasError) {
+                    return;
+                }
+                
+                // 사용자 정보 저장
+                userInfo.school = school;
+                userInfo.name = name;
+                userInfo.email = email;
+                
+                // localStorage에 저장하지 않음 (매번 입력받기 위해)
+                // 필요시 주석을 해제하여 사용할 수 있습니다
+                // try {
+                //     localStorage.setItem('userSchool', school);
+                //     localStorage.setItem('userName', name);
+                // } catch (e) {
+                //     console.warn('사용자 정보 저장 실패:', e);
+                // }
+                
+                // 시작 화면으로 이동
+                document.getElementById('userInfoScreen').style.display = 'none';
+                document.getElementById('startScreen').style.display = 'block';
             }
-            
-            if (hasError) {
-                return;
+
+            // 사용자 정보 입력 화면 표시 함수
+            function showUserInfoScreen() {
+                document.getElementById('userInfoScreen').style.display = 'block';
+                document.getElementById('startScreen').style.display = 'none';
+                document.getElementById('quizScreen').style.display = 'none';
+                document.getElementById('resultScreen').style.display = 'none';
             }
-            
-            // 사용자 정보 저장
-            userInfo.school = school;
-            userInfo.name = name;
-            userInfo.email = email;
-            
-            // localStorage에 저장하지 않음 (매번 입력받기 위해)
-            // 필요시 주석을 해제하여 사용할 수 있습니다
-            // try {
-            //     localStorage.setItem('userSchool', school);
-            //     localStorage.setItem('userName', name);
-            // } catch (e) {
-            //     console.warn('사용자 정보 저장 실패:', e);
-            // }
-            
-            // 시작 화면으로 이동
-            document.getElementById('userInfoScreen').style.display = 'none';
-            document.getElementById('startScreen').style.display = 'block';
-        }
 
-        // 사용자 정보 입력 화면 표시 함수
-        function showUserInfoScreen() {
-            document.getElementById('userInfoScreen').style.display = 'block';
-            document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('quizScreen').style.display = 'none';
-            document.getElementById('resultScreen').style.display = 'none';
-        }
-
-        // 페이지 로드 시 초기화
-        window.addEventListener('DOMContentLoaded', function() {
-            // 항상 사용자 정보 입력 화면을 먼저 보여줍니다
-            // localStorage에 저장된 정보가 있어도 매번 입력받도록 합니다
-            showUserInfoScreen();
-            
-            // 다른 화면들은 숨깁니다
-            document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('quizScreen').style.display = 'none';
-            document.getElementById('resultScreen').style.display = 'none';
-        });
-    </script>
-</body>
-</html>
+            // 페이지 로드 시 초기화
+            window.addEventListener('DOMContentLoaded', function() {
+                // 항상 사용자 정보 입력 화면을 먼저 보여줍니다
+                // localStorage에 저장된 정보가 있어도 매번 입력받도록 합니다
+                showUserInfoScreen();
+                
+                // 다른 화면들은 숨깁니다
+                document.getElementById('startScreen').style.display = 'none';
+                document.getElementById('quizScreen').style.display = 'none';
+                document.getElementById('resultScreen').style.display = 'none';
+            });
+        </script>
+    </body>
+    </html>

@@ -332,7 +332,7 @@
             
             <div class="user-info-form">
                 <div class="info-note">
-                    💡 소속과 이름은 통계 분석에만 사용되며, 개인정보는 안전하게 관리됩니다.
+                    💡 소속, 이름, 이메일은 통계 분석에만 사용되며, 개인정보는 안전하게 관리됩니다.
                 </div>
                 
                 <div class="form-group">
@@ -350,6 +350,15 @@
                     <div class="error-message" id="nameError"></div>
                     <small style="color: #666; font-size: 0.85em; margin-top: 5px; display: block;">
                         성과 이름을 모두 입력해주세요
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="userEmail">이메일</label>
+                    <input type="email" id="userEmail" placeholder="예: hong@example.com" autocomplete="email">
+                    <div class="error-message" id="emailError"></div>
+                    <small style="color: #666; font-size: 0.85em; margin-top: 5px; display: block;">
+                        결과 확인 및 통계 분석에 사용됩니다
                     </small>
                 </div>
                 
@@ -417,7 +426,7 @@
         // Google Apps Script 웹 앱 URL
         // ⚠️ 중요: SETUP_GUIDE.md를 참고하여 Google Apps Script를 배포한 후 여기에 URL을 입력하세요
         // 배포 후 받은 웹 앱 URL을 아래에 입력하세요
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxee90wFNlvPsJTK3bWvUezTaO_iGgIvqV40T_wzxjKIFfqXJnwO11FEYX9QqnPFrzG/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzldBQuAXFy_RMZRqUIvmaKOy53JguQbX2XbVnk6xhn3V3Mq0A-RPhITktt-F2BX23P/exec';
         // 예: 'https://script.google.com/macros/s/AKfycby.../exec'
         
         // 보안 토큰 (Google Apps Script의 SECRET_TOKEN과 동일한 값이어야 합니다)
@@ -431,7 +440,8 @@
         // 사용자 정보 저장
         let userInfo = {
             school: '',
-            name: ''
+            name: '',
+            email: ''
         };
 
         // 성향이 비슷한 동물 유형 매핑 (균등 배정 시 사용)
@@ -526,11 +536,13 @@
                 formData.append('userAgent', userAgent);
                 formData.append('school', userInfo.school || ''); // 소속 정보
                 formData.append('name', userInfo.name || ''); // 이름 정보
+                formData.append('email', userInfo.email || ''); // 이메일 정보
                 
                 // 디버깅: 전송할 데이터 확인
                 console.log('저장할 사용자 정보:', {
                     school: userInfo.school || '(없음)',
                     name: userInfo.name || '(없음)',
+                    email: userInfo.email || '(없음)',
                     animalType: animalType
                 });
 
@@ -572,8 +584,9 @@
             // 사용자 정보 입력 화면
             const schoolInput = document.getElementById('userSchool');
             const nameInput = document.getElementById('userName');
+            const emailInput = document.getElementById('userEmail');
             
-            if (schoolInput && nameInput) {
+            if (schoolInput && nameInput && emailInput) {
                 schoolInput.addEventListener('keypress', function(e) {
                     if (e.key === 'Enter') {
                         nameInput.focus();
@@ -581,6 +594,12 @@
                 });
                 
                 nameInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        emailInput.focus();
+                    }
+                });
+                
+                emailInput.addEventListener('keypress', function(e) {
                     if (e.key === 'Enter') {
                         saveUserInfo();
                     }
@@ -934,6 +953,7 @@
             // 사용자 정보도 초기화 (매번 새로 입력받기 위해)
             userInfo.school = '';
             userInfo.name = '';
+            userInfo.email = '';
             
             // 결과 화면을 숨기고 사용자 정보 입력 화면을 보여줍니다
             document.getElementById('resultScreen').style.display = 'none';
@@ -944,8 +964,10 @@
             // 입력 필드 초기화
             document.getElementById('userSchool').value = '';
             document.getElementById('userName').value = '';
+            document.getElementById('userEmail').value = '';
             document.getElementById('schoolError').style.display = 'none';
             document.getElementById('nameError').style.display = 'none';
+            document.getElementById('emailError').style.display = 'none';
             document.getElementById('userInfoError').style.display = 'none';
         }
 
@@ -953,10 +975,12 @@
         function saveUserInfo() {
             const school = document.getElementById('userSchool').value.trim();
             const name = document.getElementById('userName').value.trim();
+            const email = document.getElementById('userEmail').value.trim();
             
             // 에러 메시지 초기화
             document.getElementById('schoolError').style.display = 'none';
             document.getElementById('nameError').style.display = 'none';
+            document.getElementById('emailError').style.display = 'none';
             document.getElementById('userInfoError').style.display = 'none';
             
             let hasError = false;
@@ -983,6 +1007,21 @@
                 hasError = true;
             }
             
+            // 이메일 검증
+            if (!email) {
+                document.getElementById('emailError').textContent = '이메일을 입력해주세요.';
+                document.getElementById('emailError').style.display = 'block';
+                hasError = true;
+            } else {
+                // 이메일 형식 검증 (간단한 정규식)
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailPattern.test(email)) {
+                    document.getElementById('emailError').textContent = '올바른 이메일 형식을 입력해주세요.';
+                    document.getElementById('emailError').style.display = 'block';
+                    hasError = true;
+                }
+            }
+            
             if (hasError) {
                 return;
             }
@@ -990,6 +1029,7 @@
             // 사용자 정보 저장
             userInfo.school = school;
             userInfo.name = name;
+            userInfo.email = email;
             
             // localStorage에 저장하지 않음 (매번 입력받기 위해)
             // 필요시 주석을 해제하여 사용할 수 있습니다

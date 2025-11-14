@@ -20,6 +20,7 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            position: relative;
         }
 
         /* 메인 컨테이너 스타일 */
@@ -62,6 +63,7 @@
 
         /* 시작 화면 스타일 */
         .start-screen {
+            display: none; /* 기본적으로 숨김 (사용자 정보 입력 후 표시) */
             text-align: center;
         }
 
@@ -240,6 +242,67 @@
             font-size: 0.9em;
         }
 
+
+        /* 사용자 정보 입력 화면 스타일 */
+        .user-info-screen {
+            display: block; /* 기본적으로 표시 (페이지 로드 시 먼저 보여줌) */
+            text-align: center;
+        }
+
+        .user-info-form {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .info-note {
+            background: #e8f4f8;
+            border-left: 4px solid #667eea;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        /* 폼 그룹 스타일 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1em;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* 에러 메시지 스타일 */
+        .error-message {
+            color: #dc3545;
+            font-size: 0.85em;
+            margin-top: 5px;
+            display: none;
+        }
+
         /* 반응형 디자인 */
         @media (max-width: 600px) {
             .container {
@@ -262,6 +325,40 @@
 </head>
 <body>
     <div class="container">
+        <!-- 사용자 정보 입력 화면 -->
+        <div class="user-info-screen" id="userInfoScreen">
+            <h1>👋 안녕하세요!</h1>
+            <p class="subtitle">테스트를 시작하기 전에 정보를 입력해주세요</p>
+            
+            <div class="user-info-form">
+                <div class="info-note">
+                    💡 소속과 이름은 통계 분석에만 사용되며, 개인정보는 안전하게 관리됩니다.
+                </div>
+                
+                <div class="form-group">
+                    <label for="userSchool">소속 기관</label>
+                    <input type="text" id="userSchool" placeholder="예: 서울초등학교" autocomplete="organization">
+                    <div class="error-message" id="schoolError"></div>
+                    <small style="color: #666; font-size: 0.85em; margin-top: 5px; display: block;">
+                        기관의 공식 명칭을 입력해주세요 (예: OO초등학교, OO중학교 등)
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="userName">이름</label>
+                    <input type="text" id="userName" placeholder="예: 홍길동" autocomplete="name">
+                    <div class="error-message" id="nameError"></div>
+                    <small style="color: #666; font-size: 0.85em; margin-top: 5px; display: block;">
+                        성과 이름을 모두 입력해주세요
+                    </small>
+                </div>
+                
+                <div class="error-message" id="userInfoError" style="text-align: center; margin-top: 10px;"></div>
+                
+                <button class="btn" onclick="saveUserInfo()" style="width: 100%; margin-top: 10px;">다음</button>
+            </div>
+        </div>
+
         <!-- 시작 화면 -->
         <div class="start-screen" id="startScreen">
             <h1>🎯 나의 동물 유형 테스트</h1>
@@ -314,6 +411,231 @@
         };
 
         let currentQuestion = 0; // 현재 질문 번호 (0부터 시작)
+
+        const MAX_PARTICIPANTS = 120; // 최대 참여 인원수
+
+        // Google Apps Script 웹 앱 URL
+        // ⚠️ 중요: SETUP_GUIDE.md를 참고하여 Google Apps Script를 배포한 후 여기에 URL을 입력하세요
+        // 배포 후 받은 웹 앱 URL을 아래에 입력하세요
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxee90wFNlvPsJTK3bWvUezTaO_iGgIvqV40T_wzxjKIFfqXJnwO11FEYX9QqnPFrzG/exec';
+        // 예: 'https://script.google.com/macros/s/AKfycby.../exec'
+        
+        // 보안 토큰 (Google Apps Script의 SECRET_TOKEN과 동일한 값이어야 합니다)
+        // ⚠️ 중요: google-apps-script.gs의 SECRET_TOKEN과 동일한 값으로 설정하세요
+        const API_TOKEN = 'growthtogetherexperience';
+
+        // 통계 데이터 캐시 (로딩 성능 향상)
+        let cachedStats = null;
+        let statsLoading = false;
+
+        // 사용자 정보 저장
+        let userInfo = {
+            school: '',
+            name: ''
+        };
+
+        // 성향이 비슷한 동물 유형 매핑 (균등 배정 시 사용)
+        // 각 유형이 부족할 때 대체할 수 있는 유형들
+        const similarTypes = {
+            ant: ['owl'],           // 일개미 ↔ 부엉이 (둘 다 신중하고 계획적)
+            chameleon: ['parrot'],  // 카멜레온 ↔ 앵무새 (둘 다 다양성과 소통)
+            owl: ['ant'],           // 부엉이 ↔ 일개미 (둘 다 신중함)
+            penguin: ['parrot'],    // 황제펭귄 ↔ 앵무새 (둘 다 소통과 공유 중시)
+            parrot: ['chameleon', 'penguin'] // 앵무새 ↔ 카멜레온, 황제펭귄 (소통과 다양성)
+        };
+
+        // Google Sheets에서 통계를 불러오는 함수 (비동기)
+        async function loadStatistics() {
+            // 캐시된 데이터가 있고 최근에 로드했다면 캐시 사용
+            if (cachedStats && !statsLoading) {
+                return cachedStats;
+            }
+
+            // URL이 설정되지 않았으면 기본값 반환
+            if (!SCRIPT_URL || SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+                console.warn('Google Apps Script URL이 설정되지 않았습니다. SETUP_GUIDE.md를 참고하세요.');
+                return {
+                    ant: 0,
+                    chameleon: 0,
+                    owl: 0,
+                    penguin: 0,
+                    parrot: 0,
+                    total: 0
+                };
+            }
+
+            try {
+                statsLoading = true;
+                const response = await fetch(`${SCRIPT_URL}?action=getStats`);
+                
+                // Google Apps Script는 리다이렉트를 사용할 수 있으므로 처리
+                let finalResponse = response;
+                if (response.redirected) {
+                    finalResponse = await fetch(response.url);
+                }
+                
+                const data = await finalResponse.json();
+                
+                if (data.success && data.stats) {
+                    cachedStats = data.stats;
+                    return data.stats;
+                } else {
+                    throw new Error(data.error || '통계를 불러올 수 없습니다.');
+                }
+            } catch (error) {
+                console.error('통계 불러오기 실패:', error);
+                console.error('에러 상세:', error.message);
+                // 에러 발생 시 기본값 반환
+                return {
+                    ant: 0,
+                    chameleon: 0,
+                    owl: 0,
+                    penguin: 0,
+                    parrot: 0,
+                    total: 0
+                };
+            } finally {
+                statsLoading = false;
+            }
+        }
+
+        // Google Sheets에 결과를 저장하는 함수 (비동기)
+        async function saveResultToSheets(animalType, originalType) {
+            // URL이 설정되지 않았으면 저장하지 않음
+            if (!SCRIPT_URL || SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+                console.warn('Google Apps Script URL이 설정되지 않아 결과를 저장할 수 없습니다.');
+                return null;
+            }
+
+            // 사용자 정보 확인
+            if (!userInfo.school || !userInfo.name) {
+                console.warn('사용자 정보가 없어 결과를 저장할 수 없습니다.', userInfo);
+                // 사용자 정보가 없어도 저장은 시도하되, 빈 값으로 전송
+            }
+
+            try {
+                // User Agent 정보 수집
+                const userAgent = navigator.userAgent;
+                
+                // Google Apps Script에 POST 요청 (FormData 사용)
+                const formData = new FormData();
+                formData.append('action', 'saveResult');
+                formData.append('token', API_TOKEN); // 보안 토큰 추가
+                formData.append('animalType', animalType);
+                formData.append('originalType', originalType || animalType);
+                formData.append('userAgent', userAgent);
+                formData.append('school', userInfo.school || ''); // 소속 정보
+                formData.append('name', userInfo.name || ''); // 이름 정보
+                
+                // 디버깅: 전송할 데이터 확인
+                console.log('저장할 사용자 정보:', {
+                    school: userInfo.school || '(없음)',
+                    name: userInfo.name || '(없음)',
+                    animalType: animalType
+                });
+
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                // Google Apps Script는 리다이렉트를 사용하므로 다시 fetch
+                let finalResponse = response;
+                if (response.redirected || response.status === 200) {
+                    try {
+                        finalResponse = await fetch(response.url);
+                    } catch (e) {
+                        // 리다이렉트가 없으면 원본 응답 사용
+                        finalResponse = response;
+                    }
+                }
+                
+                const data = await finalResponse.json();
+                
+                if (data.success) {
+                    // 캐시 업데이트
+                    if (data.stats) {
+                        cachedStats = data.stats;
+                    }
+                    return data.stats;
+                } else {
+                    throw new Error(data.error || '결과를 저장할 수 없습니다.');
+                }
+            } catch (error) {
+                console.error('결과 저장 실패:', error);
+                return null;
+            }
+        }
+
+        // Enter 키로 사용자 정보 입력 가능하도록 처리
+        document.addEventListener('DOMContentLoaded', function() {
+            // 사용자 정보 입력 화면
+            const schoolInput = document.getElementById('userSchool');
+            const nameInput = document.getElementById('userName');
+            
+            if (schoolInput && nameInput) {
+                schoolInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        nameInput.focus();
+                    }
+                });
+                
+                nameInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        saveUserInfo();
+                    }
+                });
+            }
+        });
+
+
+        // 균등 배정 로직: 가장 많은 유형과 가장 적은 유형의 차이가 3명 이상이면 조정 (비동기)
+        async function adjustForBalance(originalType) {
+            const stats = await loadStatistics();
+            const total = stats.total || (stats.ant + stats.chameleon + stats.owl + stats.penguin + stats.parrot);
+            
+            // 최대 인원수에 도달했으면 더 이상 추가하지 않음
+            if (total >= MAX_PARTICIPANTS) {
+                return originalType;
+            }
+
+            // 각 유형의 인원수를 배열로 변환
+            const typeArray = [
+                { type: 'ant', count: stats.ant || 0 },
+                { type: 'chameleon', count: stats.chameleon || 0 },
+                { type: 'owl', count: stats.owl || 0 },
+                { type: 'penguin', count: stats.penguin || 0 },
+                { type: 'parrot', count: stats.parrot || 0 }
+            ];
+
+            // 인원수 순으로 정렬
+            typeArray.sort((a, b) => a.count - b.count);
+            
+            const maxType = typeArray[typeArray.length - 1]; // 가장 많은 유형
+            const minType = typeArray[0]; // 가장 적은 유형
+            
+            // 차이가 3명 이상인지 확인
+            if (maxType.count - minType.count >= 3) {
+                // 원래 유형이 가장 많은 유형이면, 가장 적은 유형 중에서 성향이 비슷한 것으로 변경
+                if (originalType === maxType.type) {
+                    // 가장 적은 유형들 중에서 성향이 비슷한 유형 찾기
+                    const minTypes = typeArray.filter(t => t.count === minType.count);
+                    
+                    for (let minT of minTypes) {
+                        // 원래 유형과 성향이 비슷한 유형인지 확인
+                        if (similarTypes[originalType] && similarTypes[originalType].includes(minT.type)) {
+                            return minT.type; // 성향이 비슷한 적은 유형으로 변경
+                        }
+                    }
+                    
+                    // 성향이 비슷한 유형이 없으면 가장 적은 유형으로 변경
+                    return minType.type;
+                }
+            }
+            
+            // 차이가 3명 미만이거나 원래 유형이 가장 많은 유형이 아니면 그대로 반환
+            return originalType;
+        }
 
         // 10가지 설문 질문과 각 답변의 점수 배분
         const questions = [
@@ -545,31 +867,56 @@
             }
         }
 
-        // 결과를 계산하고 표시하는 함수
-        function showResult() {
+        // 결과를 계산하고 표시하는 함수 (비동기)
+        async function showResult() {
             // 퀴즈 화면을 숨기고 결과 화면을 보여줍니다
             document.getElementById('quizScreen').style.display = 'none';
             document.getElementById('resultScreen').style.display = 'block';
             
+            // 로딩 표시
+            document.getElementById('resultType').textContent = '결과 계산 중...';
+            
             // 가장 높은 점수를 받은 동물 유형을 찾습니다
             let maxScore = 0;
-            let resultType = '';
+            let originalResultType = '';
             
             // 모든 동물 유형의 점수를 확인합니다
             for (let type in scores) {
                 if (scores[type] > maxScore) {
                     maxScore = scores[type];
-                    resultType = type;
+                    originalResultType = type;
                 }
             }
             
+            // 균등 배정 로직 적용: 통계를 고려하여 결과 유형 조정
+            const finalResultType = await adjustForBalance(originalResultType);
+            
+            // 통계 확인 및 저장
+            const stats = await loadStatistics();
+            const total = stats.total || (stats.ant + stats.chameleon + stats.owl + stats.penguin + stats.parrot);
+            
+            // 최대 인원수에 도달하지 않았을 때만 통계 업데이트
+            if (total < MAX_PARTICIPANTS) {
+                await saveResultToSheets(finalResultType, originalResultType);
+            }
+            
             // 결과를 화면에 표시합니다
-            const result = results[resultType];
+            const result = results[finalResultType];
             // 이미지를 사용하여 동물을 표시합니다 (이모지 대신)
             const resultAnimalDiv = document.getElementById('resultAnimal');
             resultAnimalDiv.innerHTML = `<img src="${result.image}" alt="${result.title}">`;
             document.getElementById('resultType').textContent = result.title;
-            document.getElementById('resultDescription').innerHTML = result.description;
+            
+            // 원래 결과와 조정된 결과가 다를 경우 안내 메시지 추가
+            let description = result.description;
+            if (originalResultType !== finalResultType) {
+                const originalResult = results[originalResultType];
+                description += `<p style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 8px; color: #856404; font-size: 0.9em;">
+                    <strong>💡 참고:</strong> 균등 배정을 위해 <strong>${originalResult.title}</strong>에서 <strong>${result.title}</strong>로 조정되었습니다.
+                </p>`;
+            }
+            
+            document.getElementById('resultDescription').innerHTML = description;
         }
 
         // 테스트를 다시 시작하는 함수
@@ -584,10 +931,99 @@
                 parrot: 0
             };
             
-            // 결과 화면을 숨기고 시작 화면을 보여줍니다
+            // 사용자 정보도 초기화 (매번 새로 입력받기 위해)
+            userInfo.school = '';
+            userInfo.name = '';
+            
+            // 결과 화면을 숨기고 사용자 정보 입력 화면을 보여줍니다
             document.getElementById('resultScreen').style.display = 'none';
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('quizScreen').style.display = 'none';
+            showUserInfoScreen();
+            
+            // 입력 필드 초기화
+            document.getElementById('userSchool').value = '';
+            document.getElementById('userName').value = '';
+            document.getElementById('schoolError').style.display = 'none';
+            document.getElementById('nameError').style.display = 'none';
+            document.getElementById('userInfoError').style.display = 'none';
+        }
+
+        // 사용자 정보 저장 함수
+        function saveUserInfo() {
+            const school = document.getElementById('userSchool').value.trim();
+            const name = document.getElementById('userName').value.trim();
+            
+            // 에러 메시지 초기화
+            document.getElementById('schoolError').style.display = 'none';
+            document.getElementById('nameError').style.display = 'none';
+            document.getElementById('userInfoError').style.display = 'none';
+            
+            let hasError = false;
+            
+            // 소속 검증
+            if (!school) {
+                document.getElementById('schoolError').textContent = '소속 기관을 입력해주세요.';
+                document.getElementById('schoolError').style.display = 'block';
+                hasError = true;
+            } else if (school.length < 2) {
+                document.getElementById('schoolError').textContent = '소속 기관명이 너무 짧습니다.';
+                document.getElementById('schoolError').style.display = 'block';
+                hasError = true;
+            }
+            
+            // 이름 검증
+            if (!name) {
+                document.getElementById('nameError').textContent = '이름을 입력해주세요.';
+                document.getElementById('nameError').style.display = 'block';
+                hasError = true;
+            } else if (name.length < 2) {
+                document.getElementById('nameError').textContent = '성과 이름을 모두 입력해주세요.';
+                document.getElementById('nameError').style.display = 'block';
+                hasError = true;
+            }
+            
+            if (hasError) {
+                return;
+            }
+            
+            // 사용자 정보 저장
+            userInfo.school = school;
+            userInfo.name = name;
+            
+            // localStorage에 저장하지 않음 (매번 입력받기 위해)
+            // 필요시 주석을 해제하여 사용할 수 있습니다
+            // try {
+            //     localStorage.setItem('userSchool', school);
+            //     localStorage.setItem('userName', name);
+            // } catch (e) {
+            //     console.warn('사용자 정보 저장 실패:', e);
+            // }
+            
+            // 시작 화면으로 이동
+            document.getElementById('userInfoScreen').style.display = 'none';
             document.getElementById('startScreen').style.display = 'block';
         }
+
+        // 사용자 정보 입력 화면 표시 함수
+        function showUserInfoScreen() {
+            document.getElementById('userInfoScreen').style.display = 'block';
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('quizScreen').style.display = 'none';
+            document.getElementById('resultScreen').style.display = 'none';
+        }
+
+        // 페이지 로드 시 초기화
+        window.addEventListener('DOMContentLoaded', function() {
+            // 항상 사용자 정보 입력 화면을 먼저 보여줍니다
+            // localStorage에 저장된 정보가 있어도 매번 입력받도록 합니다
+            showUserInfoScreen();
+            
+            // 다른 화면들은 숨깁니다
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('quizScreen').style.display = 'none';
+            document.getElementById('resultScreen').style.display = 'none';
+        });
     </script>
 </body>
 </html>

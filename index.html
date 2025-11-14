@@ -426,7 +426,7 @@
             // Google Apps Script 웹 앱 URL
             // ⚠️ 중요: SETUP_GUIDE.md를 참고하여 Google Apps Script를 배포한 후 여기에 URL을 입력하세요
             // 배포 후 받은 웹 앱 URL을 아래에 입력하세요
-            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz3QpFYwzmDiWUjmyA7OOa5F7kx3SAWdcjHXg-wri9_Q1_AwjEzpU1-QvE-bHXoqoRB/exec';
+            const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzFY2nT3rHzl_xA7xVxmDOsyotVfGmHh3coJduetcSkCRaNqqBzmmriBffw7jP5SzpK/exec';
             // 예: 'https://script.google.com/macros/s/AKfycby.../exec'
             
             // 보안 토큰 (Google Apps Script의 SECRET_TOKEN과 동일한 값이어야 합니다)
@@ -549,30 +549,43 @@
                     formData.append('email', userInfo.email || ''); // 이메일 정보
                     
                     // 디버깅: 전송할 데이터 확인
+                    console.log('=== 데이터 저장 시도 ===');
                     console.log('저장할 사용자 정보:', {
                         school: userInfo.school || '(없음)',
                         name: userInfo.name || '(없음)',
                         email: userInfo.email || '(없음)',
-                        animalType: animalType
+                        animalType: animalTypeNames[animalType] || animalType,
+                        originalType: animalTypeNames[originalType] || originalType
                     });
+                    
+                    // FormData 내용 확인
+                    console.log('FormData 내용:');
+                    for (let pair of formData.entries()) {
+                        console.log(`  ${pair[0]}: ${pair[1]}`);
+                    }
 
                     const response = await fetch(SCRIPT_URL, {
                         method: 'POST',
-                        body: formData
+                        body: formData,
+                        redirect: 'follow' // 리다이렉트 자동 처리
                     });
 
-                    // Google Apps Script는 리다이렉트를 사용하므로 다시 fetch
-                    let finalResponse = response;
-                    if (response.redirected || response.status === 200) {
-                        try {
-                            finalResponse = await fetch(response.url);
-                        } catch (e) {
-                            // 리다이렉트가 없으면 원본 응답 사용
-                            finalResponse = response;
-                        }
-                    }
+                    console.log('응답 상태:', response.status);
+                    console.log('응답 URL:', response.url);
+                    console.log('리다이렉트 여부:', response.redirected);
                     
-                    const data = await finalResponse.json();
+                    // 응답 텍스트로 먼저 확인
+                    const responseText = await response.text();
+                    console.log('응답 텍스트:', responseText);
+                    
+                    let data;
+                    try {
+                        data = JSON.parse(responseText);
+                    } catch (parseError) {
+                        console.error('JSON 파싱 실패:', parseError);
+                        console.error('응답 텍스트:', responseText);
+                        throw new Error('서버 응답을 파싱할 수 없습니다: ' + responseText.substring(0, 100));
+                    }
                     
                     if (data.success) {
                         // 캐시 업데이트

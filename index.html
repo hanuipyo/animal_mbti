@@ -303,6 +303,19 @@
                 display: none;
             }
 
+            /* 하단 안내 메시지 스타일 */
+            .disclaimer-note {
+                background: #f8f9fa;
+                border-top: 2px solid #e0e0e0;
+                padding: 15px;
+                margin-top: 20px;
+                border-radius: 8px;
+                font-size: 0.85em;
+                color: #666;
+                text-align: center;
+                line-height: 1.6;
+            }
+
             /* 반응형 디자인 */
             @media (max-width: 600px) {
                 .container {
@@ -365,6 +378,10 @@
                     <div class="error-message" id="userInfoError" style="text-align: center; margin-top: 10px;"></div>
                     
                     <button class="btn" onclick="saveUserInfo()" style="width: 100%; margin-top: 10px;">다음</button>
+                    
+                    <div class="disclaimer-note">
+                        본 유형 검사는 재미를 위한 요소로 제작되었습니다.
+                    </div>
                 </div>
             </div>
 
@@ -992,16 +1009,8 @@
                 resultAnimalDiv.innerHTML = `<img src="${result.image}" alt="${result.title}">`;
                 document.getElementById('resultType').textContent = result.title;
                 
-                // 원래 결과와 조정된 결과가 다를 경우 안내 메시지 추가
-                let description = result.description;
-                if (originalResultType !== finalResultType) {
-                    const originalResult = results[originalResultType];
-                    description += `<p style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 8px; color: #856404; font-size: 0.9em;">
-                        <strong>💡 참고:</strong> 균등 배정을 위해 <strong>${originalResult.title}</strong>에서 <strong>${result.title}</strong>로 조정되었습니다.
-                    </p>`;
-                }
-                
-                document.getElementById('resultDescription').innerHTML = description;
+                // 결과 설명을 그대로 표시 (조정 메시지는 표시하지 않음)
+                document.getElementById('resultDescription').innerHTML = result.description;
             }
 
             // 테스트를 다시 시작하는 함수
